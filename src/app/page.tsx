@@ -107,13 +107,34 @@ export default function Home() {
     e.preventDefault();
     if (!email) return;
     
-    setIsSubmitted(true);
-    
-    setTimeout(() => {
-      setEmail('');
-      setDevName('');
-      setIsSubmitted(false);
-    }, 5000);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/waitlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setEmail('');
+          setDevName('');
+          setIsSubmitted(false);
+        }, 5000);
+      } else {
+        const error = await response.json();
+        if (error.detail === "Email already on waitlist") {
+          alert("You're already on the waitlist! 🎉");
+        } else {
+          alert("Oops! Something went wrong. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error('Waitlist submission failed:', error);
+      alert("Network error. Please check your connection and try again.");
+    }
   };
 
   return (

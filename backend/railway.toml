@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+
+[[services]]
+name = "buildrs-api"
+
+[nixpacks.variables]
+NIXPACKS_PYTHON_VERSION = "3.11" 
