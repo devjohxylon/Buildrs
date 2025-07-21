@@ -1,0 +1,476 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #1a1a1a;
+  --bg-input: #111111;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #999999;
+  --border: #333333;
+  --border-light: #222222;
+  --accent: #ffffff;
+  --success: #00ff00;
+  --error: #ff0000;
+  --warning: #ffff00;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #000000;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  position: relative;
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Simple terminal scan line effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255, 255, 255, 0.08) 3px,
+      rgba(255, 255, 255, 0.08) 4px
+    );
+  pointer-events: none;
+  z-index: 9999;
+  animation: scan 0.15s linear infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(4px); }
+}
+
+/* Typography */
+.terminal-text {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.title-text {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+/* Terminal Window */
+.terminal {
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  padding-top: 48px;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+  margin: 8px 0;
+}
+
+.terminal::before {
+  content: "● ● ●";
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.terminal-header {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border);
+  padding: 16px 24px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.terminal-content {
+  padding: 20px;
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  margin: 8px 0;
+}
+
+.card:hover {
+  border-color: var(--text-secondary);
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+}
+
+.card-header {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border);
+  padding: 16px 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.card-content {
+  padding: 24px;
+}
+
+/* Buttons */
+.btn {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  padding: 16px 24px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  min-height: 56px;
+}
+
+.btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.btn-secondary {
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.btn-secondary:hover {
+  background: var(--text-secondary);
+  color: var(--bg-primary);
+}
+
+/* Action Buttons */
+.action-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-size: 24px;
+}
+
+.action-btn:hover {
+  border-color: var(--text-primary);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  transform: scale(1.1);
+}
+
+.action-btn.reject {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.action-btn.reject:hover {
+  background: var(--error);
+  color: var(--bg-primary);
+}
+
+.action-btn.like {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.action-btn.like:hover {
+  background: var(--success);
+  color: var(--bg-primary);
+}
+
+/* Tags */
+.tag {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin: 4px;
+  min-height: 36px;
+  font-weight: 600;
+}
+
+.tag:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* Code Block */
+.code-block {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  padding: 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  position: relative;
+  margin: 16px 0;
+  font-weight: 500;
+}
+
+.code-block::before {
+  content: "// code";
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Status Indicators */
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 12px;
+}
+
+.status-online {
+  background: var(--success);
+  animation: pulse-status 2s infinite;
+}
+
+.status-offline {
+  background: var(--text-muted);
+}
+
+@keyframes pulse-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  margin: 16px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--text-primary);
+  transition: width 0.3s ease;
+}
+
+/* Loading */
+.loading-dots::after {
+  content: '...';
+  animation: loading-dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes loading-dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  80%, 100% { content: ''; }
+}
+
+/* Animations */
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Swipe Cards */
+.swipe-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  transition: transform 0.2s ease;
+  overflow: hidden;
+}
+
+.swipe-card:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+/* Matrix Background */
+.matrix-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* Text Readability Classes */
+.text-readable {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.text-readable-secondary {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.text-readable-muted {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .terminal {
+    padding: 16px;
+    margin: 4px;
+  }
+  
+  .card-content {
+    padding: 16px;
+  }
+  
+  .action-btn {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-height: 48px;
+  }
+  
+  .terminal-text {
+    font-size: 14px;
+  }
+  
+  .title-text {
+    font-size: 20px;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Focus States */
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+button:focus,
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--text-primary) !important;
+}
+
+.btn:focus,
+.action-btn:focus {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+/* Selection */
+::selection {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}

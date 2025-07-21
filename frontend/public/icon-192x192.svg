@@ -1,0 +1,8 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#000000"/>
+  <rect x="24" y="24" width="144" height="144" rx="8" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+  <rect x="36" y="36" width="24" height="2" fill="#000000"/>
+  <rect x="66" y="36" width="24" height="2" fill="#000000"/>
+  <rect x="96" y="36" width="24" height="2" fill="#000000"/>
+  <text x="96" y="120" text-anchor="middle" fill="#000000" font-family="monospace" font-size="24" font-weight="bold">BUILDRS</text>
+</svg> 
