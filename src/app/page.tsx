@@ -31,8 +31,7 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [devName, setDevName] = useState('');
   const [isBooting, setIsBooting] = useState(true);
-
-  const waitlistCount = 1247;
+  const [waitlistCount, setWaitlistCount] = useState(0);
 
   const funnyMessages = [
     "// TODO: Add actual features",
@@ -103,6 +102,24 @@ export default function Home() {
     return () => clearInterval(cursorBlink);
   }, []);
 
+  useEffect(() => {
+    // Fetch waitlist count on component mount
+    fetchWaitlistCount();
+  }, []);
+
+  const fetchWaitlistCount = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/waitlist/count`);
+      if (response.ok) {
+        const data = await response.json();
+        setWaitlistCount(data.count);
+      }
+    } catch (error) {
+      console.error('Failed to fetch waitlist count:', error);
+      // Keep count at 0 if API fails
+    }
+  };
+
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -118,6 +135,8 @@ export default function Home() {
 
       if (response.ok) {
         setIsSubmitted(true);
+        // Refresh the waitlist count after successful submission
+        fetchWaitlistCount();
         setTimeout(() => {
           setEmail('');
           setDevName('');
