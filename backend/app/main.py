@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 import os
 from decouple import config
@@ -84,30 +85,29 @@ async def health_check():
 async def add_to_waitlist(waitlist_entry: WaitlistCreate, db: Session = Depends(get_db)):
     """Add email to waitlist"""
     try:
-        # Check if email already exists
-        existing_entry = db.query(WaitlistEntry).filter(WaitlistEntry.email == waitlist_entry.email).first()
-        if existing_entry:
-            raise HTTPException(status_code=400, detail="Email already on waitlist")
-        
-        # Create new waitlist entry
+        # Attempt to create the waitlist entry directly – rely on the UNIQUE constraint
         db_entry = WaitlistEntry(
             email=waitlist_entry.email,
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
         db.add(db_entry)
         db.commit()
         db.refresh(db_entry)
-        
+
         return WaitlistResponse(
             id=db_entry.id,
             email=db_entry.email,
             created_at=db_entry.created_at,
-            message="Successfully added to waitlist! 🎉"
+            message="Successfully added to waitlist! 🎉",
         )
-    except Exception as e:
+
+    except IntegrityError:
+        # Duplicate email attempted – inform the caller explicitly
         db.rollback()
-        if "Email already on waitlist" in str(e):
-            raise e
+        raise HTTPException(status_code=400, detail="Email already on waitlist")
+
+    except Exception:
+        db.rollback()
         raise HTTPException(status_code=500, detail="Failed to add to waitlist")
 
 @app.get("/waitlist/count")

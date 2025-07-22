@@ -23,7 +23,16 @@ import {
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
-const API_BASE_URL = 'https://buildrs-production.up.railway.app';
+/**
+ * Backend API base URL.
+ *
+ * Use the environment variable exposed by Next.js (prefixed with NEXT_PUBLIC_) so that
+ * Vercel and local development can inject the correct value at build-time.
+ * Falls back to the production Railway instance when the variable is not set – useful
+ * when viewing preview deployments without any environment variables configured.
+ */
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
 
@@ -127,7 +136,10 @@ export default function Home() {
         setIsBackendOnline(false);
       }
     } catch (error) {
-      console.error('Failed to fetch waitlist count:', error);
+      if (process.env.NODE_ENV === 'development') {
+        // Only log detailed errors during development to avoid noisy console output in production
+        console.error('Failed to fetch waitlist count:', error);
+      }
       setIsBackendOnline(false);
       // Keep count at 0 if API fails
     }
@@ -165,7 +177,9 @@ export default function Home() {
         }
       }
     } catch (error) {
-      console.error('Waitlist submission failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Waitlist submission failed:', error);
+      }
       setIsBackendOnline(false);
       if (!isBackendOnline) {
         alert("Backend is currently offline. We're working on it! 🚧");
