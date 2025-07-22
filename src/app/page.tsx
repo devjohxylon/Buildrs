@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
@@ -25,6 +25,20 @@ import MatrixBackground from '@/components/MatrixBackground';
 
 const API_BASE_URL = 'https://buildrs-production.up.railway.app';
 
+const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
+
+[ OK ] Loading coffee.exe...
+[ OK ] Warming up rubber duck...
+[ WARN ] Stackoverflow.com: CONNECTION CRITICAL
+[ OK ] npm install anxiety
+
+login: dev
+Password: hunter2
+
+Welcome to Buildrs! Where bugs become features ✨
+
+dev@chaos:~$ `;
+
 export default function Home() {
   const [terminalText, setTerminalText] = useState('');
   const [currentMessage, setCurrentMessage] = useState(0);
@@ -35,6 +49,7 @@ export default function Home() {
   const [isBooting, setIsBooting] = useState(true);
   const [waitlistCount, setWaitlistCount] = useState(0);
   const [isBackendOnline, setIsBackendOnline] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
 
   const funnyMessages = [
     "// TODO: Add actual features",
@@ -52,50 +67,43 @@ export default function Home() {
     "// If you're reading this, I'm sorry",
   ];
 
+  const typeText = useCallback(async (text: string, speed: number = 40) => {
+    setIsTyping(true);
+    for (let i = 0; i <= text.length; i++) {
+      setTerminalText(text.slice(0, i));
+      await new Promise(resolve => setTimeout(resolve, speed));
+    }
+    setIsTyping(false);
+  }, []);
+
+  // Boot sequence
   useEffect(() => {
-    // Handle initial boot sequence
     if (isBooting) {
-      setTerminalText('');
-      const bootSequence = 'Buildrs OS v0.1.0-probably-works\n\n[ OK ] Loading coffee.exe...\n[ OK ] Warming up rubber duck...\n[ WARN ] Stackoverflow.com: CONNECTION CRITICAL\n[ OK ] npm install anxiety\n\nlogin: dev\nPassword: hunter2\n\nWelcome to Buildrs! Where bugs become features ✨\n\ndev@chaos:~$ ';
-      
-      let i = 0;
-      const bootTyping = setInterval(() => {
-        setTerminalText(bootSequence.slice(0, i + 1));
-        i++;
-        if (i >= bootSequence.length) {
-          clearInterval(bootTyping);
-          setTimeout(() => {
-            setIsBooting(false);
-            setTerminalText('');
-            setCurrentMessage(0);
-          }, 2000);
-        }
-      }, 40);
-      
-      return () => clearInterval(bootTyping);
+      typeText(BOOT_SEQUENCE).then(() => {
+        setTimeout(() => {
+          setIsBooting(false);
+          setTerminalText('');
+        }, 2000);
+      });
     }
+  }, [isBooting, typeText]);
 
-    // After boot, cycle through funny messages with typing effect
-    if (!isBooting) {
+  // Funny messages
+  useEffect(() => {
+    if (!isBooting && !isTyping) {
       const message = funnyMessages[currentMessage];
-      let i = 0;
-      setTerminalText('');
-      
-      const messageTyping = setInterval(() => {
-        setTerminalText(message.slice(0, i + 1));
-        i++;
-        if (i >= message.length) {
-          clearInterval(messageTyping);
-          setTimeout(() => {
+      typeText(message, 100).then(() => {
+        const timeout = setTimeout(() => {
+          if (!isBooting) {
             setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
-          }, 5000);
-        }
-      }, 100);
-
-      return () => clearInterval(messageTyping);
+          }
+        }, 5000);
+        return () => clearTimeout(timeout);
+      });
     }
-  }, [currentMessage, isBooting, funnyMessages]);
+  }, [currentMessage, isBooting, isTyping, funnyMessages, typeText]);
 
+  // Cursor blink
   useEffect(() => {
     const cursorBlink = setInterval(() => {
       setShowCursor(prev => !prev);
@@ -103,8 +111,8 @@ export default function Home() {
     return () => clearInterval(cursorBlink);
   }, []);
 
+  // Fetch waitlist count
   useEffect(() => {
-    // Fetch waitlist count on component mount
     fetchWaitlistCount();
   }, []);
 
