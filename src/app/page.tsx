@@ -1,29 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { 
-  Terminal, 
-  Code, 
-  Users, 
-  Zap, 
-  ArrowRight, 
   Github, 
-  Activity,
-  Database,
-  Shield,
   Mail,
-  CheckCircle,
-  Coffee,
-  Cpu,
-  Brain,
-  Rocket,
-  Lock
+  CheckCircle
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
-const API_BASE_URL = 'https://buildrs-production.up.railway.app';
+// Use environment variable with fallback for local development
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
 
@@ -45,27 +32,26 @@ export default function Home() {
   const [showCursor, setShowCursor] = useState(true);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [devName, setDevName] = useState('');
   const [isBooting, setIsBooting] = useState(true);
   const [waitlistCount, setWaitlistCount] = useState(0);
   const [isBackendOnline, setIsBackendOnline] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const funnyMessages = [
+  const funnyMessages = useMemo(() => [
     "// TODO: Add actual features",
-    "console.log('Why is this not working?');", 
     "git commit -m 'It works on my machine 🤷‍♂️'",
-    "// This code was written at 3AM, good luck",
+    "{/* This code was written at 3AM, good luck */}",
     "const coffee = 'required';",
-    "// I'll refactor this later (narrator: they never did)",
+    "{/* I'll refactor this later (narrator: they never did) */}",
     "rm -rf node_modules && npm install // classic",
     "git push --force // YOLO",
-    "// Don't judge me, I'll fix this before launch",
-    "sudo rm -rf / --no-preserve-root // just kidding",
+    "{/* Don't judge me, I'll fix this before launch */}",
     "npm install left-pad // the good old days",
     "git commit -m 'fixed bug' // what bug? nobody knows",
-    "// If you're reading this, I'm sorry",
-  ];
+    "{/* If you're reading this, I'm sorry */}",
+  ], []);
 
   const typeText = useCallback(async (text: string, speed: number = 40) => {
     setIsTyping(true);
@@ -118,60 +104,96 @@ export default function Home() {
 
   const fetchWaitlistCount = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/waitlist/count`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch(`${API_BASE_URL}/waitlist/count`, {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
       if (response.ok) {
         const data = await response.json();
-        setWaitlistCount(data.count);
+        setWaitlistCount(data.count || 0);
         setIsBackendOnline(true);
+        setError(null);
       } else {
         setIsBackendOnline(false);
+        setError('Backend service unavailable');
       }
     } catch (error) {
-      console.error('Failed to fetch waitlist count:', error);
       setIsBackendOnline(false);
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setError('Request timeout - backend may be offline');
+        } else {
+          setError('Network error - check your connection');
+        }
+      } else {
+        setError('Unknown error occurred');
+      }
       // Keep count at 0 if API fails
+      setWaitlistCount(0);
     }
   };
 
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setError(null);
     
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
       const response = await fetch(`${API_BASE_URL}/waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         setIsSubmitted(true);
         setIsBackendOnline(true);
+        setError(null);
         // Refresh the waitlist count after successful submission
-        fetchWaitlistCount();
+        await fetchWaitlistCount();
         setTimeout(() => {
           setEmail('');
-          setDevName('');
           setIsSubmitted(false);
         }, 5000);
       } else {
-        const error = await response.json();
-        if (error.detail === "Email already on waitlist") {
-          alert("You're already on the waitlist! 🎉");
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        if (errorData.detail === "Email already on waitlist") {
+          setError("You're already on the waitlist! 🎉");
         } else {
-          alert("Oops! Something went wrong. Please try again.");
+          setError(`Submission failed: ${errorData.detail || 'Please try again'}`);
         }
       }
     } catch (error) {
-      console.error('Waitlist submission failed:', error);
       setIsBackendOnline(false);
-      if (!isBackendOnline) {
-        alert("Backend is currently offline. We're working on it! 🚧");
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setError("Request timeout - our servers might be sleeping ☕");
+        } else {
+          setError("Network error - check your connection and try again");
+        }
       } else {
-        alert("Network error. Please check your connection and try again.");
+        setError("Something went wrong - please try again later");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -192,6 +214,13 @@ export default function Home() {
             <span className="text-gray-500 font-mono text-xs px-2 py-1 bg-gray-900 rounded border border-gray-700">
               v0.1.0-alpha
             </span>
+            <div className={`text-xs px-2 py-1 rounded border ${
+              isBackendOnline 
+                ? 'text-green-400 border-green-400/30 bg-green-400/10' 
+                : 'text-red-400 border-red-400/30 bg-red-400/10'
+            }`}>
+              API {isBackendOnline ? 'ONLINE' : 'OFFLINE'}
+            </div>
           </div>
         </div>
       </nav>
@@ -209,7 +238,7 @@ export default function Home() {
                 transition={{ duration: 0.8 }}
               >
                 <div className="text-yellow-400 text-lg mb-6 terminal-text font-semibold">
-                  // Currently brewing something special...
+                  {/* Currently brewing something special... */}
                 </div>
                 
                 <h1 className="text-7xl md:text-8xl font-bold mb-8 title-text leading-tight">
@@ -219,7 +248,7 @@ export default function Home() {
                 <p className="text-base mb-12 text-gray-300 leading-relaxed font-medium max-w-xl">
                   Where developers swipe right on their next collaboration. 
                   <br />
-                  A swipe platform for finding coding partners. We're building the place where 
+                  A swipe platform for finding coding partners. We&apos;re building the place where 
                   developers discover projects, connect with builders, and create something amazing together.
                 </p>
 
@@ -227,7 +256,7 @@ export default function Home() {
                 <div className="terminal p-9 max-w-full mt-8">
                   <div className="terminal-content">
                     <div className="text-gray-400 text-base mb-5 terminal-text font-semibold">
-                      // Current developer status
+                      {/* Current developer status */}
                     </div>
                     <div className="space-y-4 text-base terminal-text">
                       <div className="flex items-center gap-4">
@@ -244,7 +273,7 @@ export default function Home() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-purple-400 text-lg">●</span>
-                        <span className="text-white font-medium">Bug count: It's not a bug, it's a feature</span>
+                        <span className="text-white font-medium">Bug count: It&apos;s not a bug, it&apos;s a feature</span>
                       </div>
                     </div>
                   </div>
@@ -291,22 +320,32 @@ export default function Home() {
                     Get early access
                   </div>
                   
+                  {error && (
+                    <div className="mb-4 p-3 border border-red-400/30 bg-red-400/10 rounded text-red-400 text-sm">
+                      {error}
+                    </div>
+                  )}
+                  
                   {!isSubmitted ? (
                     <form onSubmit={handleWaitlistSubmit} className="space-y-5">
                       <input
                         type="email"
                         placeholder="your@email.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          setError(null); // Clear error when user types
+                        }}
                         required
-                        className="w-full bg-gray-900 border border-gray-700 rounded px-4 py-3 text-white terminal-text text-base focus:border-white focus:outline-none"
+                        disabled={isSubmitting}
+                        className="w-full bg-gray-900 border border-gray-700 rounded px-4 py-3 text-white terminal-text text-base focus:border-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <button
                         type="submit"
-                        className="w-full btn btn-primary text-base py-3 font-semibold"
-                        disabled={!email}
+                        className="w-full btn btn-primary text-base py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!email || isSubmitting}
                       >
-                        JOIN WAITLIST
+                        {isSubmitting ? 'JOINING...' : 'JOIN WAITLIST'}
                       </button>
                       <div className="text-center pt-2">
                         <div className="flex items-baseline justify-center gap-2 text-base terminal-text">
@@ -327,7 +366,7 @@ export default function Home() {
                     >
                       <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
                       <div className="text-green-400 font-bold terminal-text text-base">
-                        You're in! 🎉
+                        You&apos;re in! 🎉
                       </div>
                     </motion.div>
                   )}

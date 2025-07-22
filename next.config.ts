@@ -24,7 +24,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "upgrade-insecure-requests; default-src https: 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; require-trusted-types-for 'script'"
+    value: "upgrade-insecure-requests; default-src 'self' https://buildrs-production.up.railway.app; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
   },
   {
     key: 'Permissions-Policy',
@@ -41,27 +41,15 @@ const securityHeaders = [
   {
     key: 'Cross-Origin-Embedder-Policy',
     value: 'require-corp'
-  },
-  {
-    key: 'Cache-Control',
-    value: 'no-cache, no-store, must-revalidate'
-  },
-  {
-    key: 'Pragma',
-    value: 'no-cache'
-  },
-  {
-    key: 'Expires',
-    value: '0'
   }
 ];
 
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Enable ESLint during builds
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Enable TypeScript errors during builds
   },
   images: {
     domains: ['github.com', 'avatars.githubusercontent.com'],
@@ -90,6 +78,15 @@ const nextConfig = {
       },
     ];
   },
+  // Optimize for production
+  experimental: {
+    optimizeCss: true,
+  },
+  // Better error handling
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 };
 
 export default withPWA({
@@ -97,4 +94,5 @@ export default withPWA({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest\.json$/],
 })(nextConfig);

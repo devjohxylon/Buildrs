@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import TinderCard from 'react-tinder-card';
 import { motion } from 'framer-motion';
 import { Profile, Project, SwipeCard as SwipeCardType } from '@/types';
@@ -26,12 +26,10 @@ interface SwipeCardProps {
 }
 
 export default function SwipeCard({ card, onSwipe, onCardLeftScreen }: SwipeCardProps) {
-  const [lastDirection, setLastDirection] = useState<string>('');
-  const cardRef = useRef<any>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
     if (direction === 'left' || direction === 'right') {
-      setLastDirection(direction);
       onSwipe(direction, card);
     }
   };
@@ -47,270 +45,279 @@ export default function SwipeCard({ card, onSwipe, onCardLeftScreen }: SwipeCard
     const snippets = [
       "const buildCool = async () => {\n  return await collaboration();\n};",
       "function findPartner() {\n  return devs.filter(dev => \n    dev.vibe === 'awesome'\n  );\n}",
-      "// TODO: Build something epic\nif (skills.match(yours)) {\n  lets.collaborate();\n}",
-      "const match = developers\n  .find(dev => dev.passion)\n  .code.together();"
+      "{/* TODO: Build something epic */}\nif (skills.match(yours)) {\n  lets.collaborate();\n}",
+      "const passion = skills + motivation;\nif (passion > 9000) {\n  return 'perfect match!';\n}",
+      "while (building.isAwesome) {\n  addMoreFeatures();\n  drinkCoffee();\n}"
     ];
     return snippets[Math.floor(Math.random() * snippets.length)];
   };
 
-  const ProfileCard = ({ profile }: { profile: Profile }) => (
-    <div className="h-full flex flex-col swipe-card">
-      {/* Terminal Header */}
-      <div className="card-header">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-500"></div>
-            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-            <div className="w-4 h-4 rounded-full bg-green-500"></div>
-          </div>
-          <span className="terminal-text text-base text-white font-semibold">
-            {profile.githubUsername || profile.name.toLowerCase().replace(' ', '_')}@buildrs:~$
-          </span>
-        </div>
-        <div className="text-gray-300 text-sm font-medium">
-          cat /dev/profiles/{profile.name.toLowerCase().replace(' ', '_')}.json
-        </div>
-      </div>
-
-      {/* Profile Header */}
-      <div className="card-content border-b border-gray-800 pb-6">
-        <div className="flex items-center gap-6 mb-6">
-          <div className="w-20 h-20 bg-gray-800 border border-gray-700 rounded flex items-center justify-center">
-            <Code className="text-white" size={32} />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white title-text mb-2">{profile.name}</h2>
-            <div className="flex items-center gap-3 text-gray-200 text-base font-medium">
-              <MapPin size={18} />
-              <span>{profile.location || 'Remote'}</span>
+  if (isProfile) {
+    const profile = data as Profile;
+    return (
+      <TinderCard
+        ref={cardRef}
+        className="absolute inset-0"
+        onSwipe={handleSwipe}
+        onCardLeftScreen={handleCardLeftScreen}
+        preventSwipe={['up', 'down']}
+        swipeRequirementType="position"
+        swipeThreshold={200}
+      >
+        <motion.div
+          className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 overflow-hidden cursor-grab active:cursor-grabbing"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {/* Profile Header */}
+          <div className="p-8 border-b border-slate-700">
+            <div className="flex items-start gap-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
+                {profile.name.charAt(0)}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-white mb-2">{profile.name}</h3>
+                <p className="text-blue-400 text-lg font-semibold mb-3">{profile.role}</p>
+                <div className="flex items-center gap-4 text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <MapPin size={16} />
+                    <span className="text-sm">{profile.location}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock size={16} />
+                    <span className="text-sm">{profile.experience} exp</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3 text-base">
-          <div className="status-dot status-online"></div>
-          <span className="text-white terminal-text font-semibold">
-            {profile.isLookingForProjects ? 'SEEKING_PROJECTS' : 'RECRUITING_COLLABORATORS'}
-          </span>
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="flex-1 card-content">
-        {/* Bio */}
-        <div className="mb-6">
-          <div className="text-gray-300 text-sm mb-3 terminal-text font-semibold">/* Developer Bio */</div>
-          <p className="text-white text-base leading-relaxed font-medium">
-            {profile.bio}
-          </p>
-        </div>
-
-        {/* Skills */}
-        <div className="mb-6">
-          <div className="text-gray-200 text-sm mb-3 terminal-text font-semibold">const skills = [</div>
-          <div className="ml-6 flex flex-wrap gap-2 mb-3">
-            {profile.skills.slice(0, 6).map((skill, index) => (
-              <span key={index} className="tag text-sm text-white font-semibold border-gray-500">
-                "{skill}"
-              </span>
-            ))}
-            {profile.skills.length > 6 && (
-              <span className="text-gray-300 text-sm font-medium">
-                ...{profile.skills.length - 6} more
-              </span>
-            )}
+          {/* Code snippet */}
+          <div className="p-6 bg-slate-950 border-b border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <Terminal size={16} className="text-green-400" />
+              <span className="text-green-400 text-sm font-mono">~/current-vibe.js</span>
+            </div>
+            <pre className="text-green-400 font-mono text-sm overflow-hidden">
+              <code>{getRandomCodeSnippet()}</code>
+            </pre>
           </div>
-          <div className="text-gray-200 text-sm terminal-text font-semibold">];</div>
-        </div>
 
-        {/* Availability */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 text-white text-base font-semibold">
-            <Activity size={18} />
-            <span>Available: {profile.availability}</span>
+          {/* Skills */}
+          <div className="p-6 border-b border-slate-700">
+            <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+              <Code size={18} />
+              Tech Stack
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {profile.skills.slice(0, 8).map((skill, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-slate-800 text-gray-300 rounded-full text-sm border border-slate-600"
+                >
+                  {skill}
+                </span>
+              ))}
+              {profile.skills.length > 8 && (
+                <span className="px-3 py-1 bg-slate-700 text-gray-400 rounded-full text-sm">
+                  +{profile.skills.length - 8} more
+                </span>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Code Snippet */}
-        <div className="code-block mb-6">
-          <pre className="text-white text-sm terminal-text font-medium">
-            {getRandomCodeSnippet()}
-          </pre>
-        </div>
-
-        {/* Social Links */}
-        <div className="flex gap-3 mt-auto">
-          {profile.portfolioUrl && (
-            <button className="action-btn w-12 h-12">
-              <Globe size={20} />
-            </button>
-          )}
-          {profile.linkedinUrl && (
-            <button className="action-btn w-12 h-12">
-              <Linkedin size={20} />
-            </button>
-          )}
-          <button className="action-btn w-12 h-12">
-            <Github size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const ProjectCard = ({ project }: { project: Project }) => (
-    <div className="h-full flex flex-col swipe-card">
-      {/* Terminal Header */}
-      <div className="card-header">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-500"></div>
-            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-            <div className="w-4 h-4 rounded-full bg-green-500"></div>
+          {/* Bio */}
+          <div className="p-6 border-b border-slate-700">
+            <p className="text-gray-300 leading-relaxed">{profile.bio}</p>
           </div>
-          <span className="terminal-text text-base text-white font-semibold">
-            user@buildrs:~/projects$
-          </span>
-        </div>
-        <div className="text-gray-300 text-sm font-medium">
-          git clone {project.repositoryUrl || `https://github.com/buildrs/${project.title.toLowerCase().replace(/[^a-z]/g, '-')}`}
-        </div>
-      </div>
 
-      {/* Project Header */}
-      <div className="card-content border-b border-gray-800 pb-6">
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center gap-3">
-            <Briefcase className="text-white" size={20} />
-            <span className="text-gray-200 terminal-text text-base uppercase font-semibold">
-              {project.projectType.replace('-', '_')}
-            </span>
+          {/* Interests & Goals */}
+          <div className="p-6 border-b border-slate-700">
+            <h4 className="text-white font-semibold mb-3">Looking to build</h4>
+            <div className="flex flex-wrap gap-2">
+              {profile.interests.map((interest, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm border border-blue-500/30"
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
           </div>
-          <span className={`tag text-sm font-bold ${
-            project.difficulty === 'easy' ? 'text-green-400 border-green-400' :
-            project.difficulty === 'medium' ? 'text-yellow-400 border-yellow-400' :
-            'text-red-400 border-red-400'
-          }`}>
-            {project.difficulty}
-          </span>
-        </div>
-        
-        <h2 className="text-2xl font-bold text-white mb-6 title-text">
-          {project.title}
-        </h2>
-        
-        <div className="flex items-center gap-8 text-gray-200 text-base font-medium">
-          <div className="flex items-center gap-3">
-            <Users size={18} />
-            <span>{project.currentCollaborators}/{project.maxCollaborators}</span>
+
+          {/* Social Links */}
+          <div className="p-6">
+            <div className="flex items-center gap-4">
+              {profile.github && (
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Github size={18} />
+                  <span className="text-sm">GitHub</span>
+                </a>
+              )}
+              {profile.linkedin && (
+                <a
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Linkedin size={18} />
+                  <span className="text-sm">LinkedIn</span>
+                </a>
+              )}
+              {profile.portfolio && (
+                <a
+                  href={profile.portfolio}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Globe size={18} />
+                  <span className="text-sm">Portfolio</span>
+                </a>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Clock size={18} />
-            <span>{project.estimatedDuration}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 card-content">
-        {/* Description */}
-        <div className="mb-6">
-          <div className="text-gray-300 text-sm mb-3 terminal-text font-semibold"># Project Description</div>
-          <p className="text-white text-base leading-relaxed font-medium">
-            {project.description}
-          </p>
-        </div>
-
-        {/* Tech Stack */}
-        <div className="mb-6">
-          <div className="text-gray-200 text-sm mb-3 terminal-text font-semibold">"dependencies": {`{`}</div>
-          <div className="ml-6 space-y-2">
-            {project.techStack.map((tech, index) => (
-              <div key={index} className="text-gray-200 text-sm terminal-text font-medium">
-                "{tech}": "latest"{index < project.techStack.length - 1 ? ',' : ''}
-              </div>
-            ))}
-          </div>
-          <div className="text-gray-200 text-sm terminal-text font-semibold">{`}`}</div>
-        </div>
-
-        {/* Looking For */}
-        <div className="mb-6">
-          <div className="text-gray-300 text-sm mb-3 terminal-text font-semibold">// TODO: Need these roles</div>
-          <div className="space-y-2">
-            {project.lookingForRoles.map((role, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <Terminal size={14} className="text-gray-400" />
-                <span className="text-gray-200 text-sm terminal-text font-medium">{role}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Status */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 text-white text-base font-semibold">
-            <div className="status-dot status-online"></div>
-            <span>Status: {project.status.toUpperCase().replace('-', '_')}</span>
-          </div>
-        </div>
-
-        {/* Project Links */}
-        <div className="flex gap-3 mt-auto">
-          {project.repositoryUrl && (
-            <button className="action-btn w-12 h-12">
-              <Github size={20} />
-            </button>
-          )}
-          {project.demoUrl && (
-            <button className="action-btn w-12 h-12">
-              <ExternalLink size={20} />
-            </button>
-          )}
-          <button className="action-btn w-12 h-12">
-            <Zap size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <TinderCard
-      ref={cardRef}
-      className="absolute"
-      onSwipe={handleSwipe}
-      onCardLeftScreen={handleCardLeftScreen}
-      preventSwipe={['up', 'down']}
-      swipeRequirementType="position"
-      swipeThreshold={100}
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="relative w-96 h-[650px] select-none cursor-grab active:cursor-grabbing"
+        </motion.div>
+      </TinderCard>
+    );
+  } else {
+    // Project card
+    const project = data as Project;
+    return (
+      <TinderCard
+        ref={cardRef}
+        className="absolute inset-0"
+        onSwipe={handleSwipe}
+        onCardLeftScreen={handleCardLeftScreen}
+        preventSwipe={['up', 'down']}
+        swipeRequirementType="position"
+        swipeThreshold={200}
       >
-        {isProfile ? (
-          <ProfileCard profile={data as Profile} />
-        ) : (
-          <ProjectCard project={data as Project} />
-        )}
-        
-        {/* Swipe indicators */}
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.div 
-            className="absolute top-10 right-10 transform rotate-12 bg-red-500 text-white px-6 py-3 rounded font-bold terminal-text border border-red-500 opacity-0 transition-opacity duration-200 text-lg"
-          >
-            REJECT
-          </motion.div>
-          <motion.div 
-            className="absolute top-10 left-10 transform -rotate-12 bg-green-500 text-white px-6 py-3 rounded font-bold terminal-text border border-green-500 opacity-0 transition-opacity duration-200 text-lg"
-          >
-            MATCH
-          </motion.div>
-        </div>
-      </motion.div>
-    </TinderCard>
-  );
+        <motion.div
+          className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 overflow-hidden cursor-grab active:cursor-grabbing"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {/* Project Header */}
+          <div className="p-8 border-b border-slate-700">
+            <div className="flex items-start gap-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-2xl">
+                <Briefcase className="text-white" size={32} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
+                <p className="text-green-400 text-lg font-semibold mb-3">{project.category}</p>
+                <div className="flex items-center gap-4 text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <Users size={16} />
+                    <span className="text-sm">{project.teamSize} people needed</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock size={16} />
+                    <span className="text-sm">{project.timeline}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Code snippet for project */}
+          <div className="p-6 bg-slate-950 border-b border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <Terminal size={16} className="text-green-400" />
+              <span className="text-green-400 text-sm font-mono">~/project-idea.md</span>
+            </div>
+            <pre className="text-green-400 font-mono text-sm overflow-hidden">
+              <code>
+                {`const projectIdea = {\n  name: &quot;${project.title}&quot;,\n  status: &quot;seeking collaborators&quot;,\n  vibe: &quot;let's build something cool&quot;\n};`}
+              </code>
+            </pre>
+          </div>
+
+          {/* Tech Stack */}
+          <div className="p-6 border-b border-slate-700">
+            <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+              <Code size={18} />
+              Tech Stack
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {project.techStack.slice(0, 8).map((tech, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-slate-800 text-gray-300 rounded-full text-sm border border-slate-600"
+                >
+                  {tech}
+                </span>
+              ))}
+              {project.techStack.length > 8 && (
+                <span className="px-3 py-1 bg-slate-700 text-gray-400 rounded-full text-sm">
+                  +{project.techStack.length - 8} more
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="p-6 border-b border-slate-700">
+            <p className="text-gray-300 leading-relaxed">{project.description}</p>
+          </div>
+
+          {/* Looking for */}
+          <div className="p-6 border-b border-slate-700">
+            <h4 className="text-white font-semibold mb-3">Looking for</h4>
+            <div className="flex flex-wrap gap-2">
+              {project.lookingFor.map((role, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30"
+                >
+                  {role}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Project Links */}
+          <div className="p-6">
+            <div className="flex items-center gap-4">
+              {project.repository && (
+                <a
+                  href={project.repository}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Github size={18} />
+                  <span className="text-sm">Repository</span>
+                </a>
+              )}
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink size={18} />
+                  <span className="text-sm">Demo</span>
+                </a>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </TinderCard>
+    );
+  }
 } 
