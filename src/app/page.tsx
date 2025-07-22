@@ -10,7 +10,23 @@ import {
 import MatrixBackground from '@/components/MatrixBackground';
 
 // Use environment variable with fallback for local development
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
+const API_BASE_URL = (() => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const fallbackUrl = 'https://buildrs-production.up.railway.app';
+  
+  if (!envUrl) {
+    console.log('⚠️ NEXT_PUBLIC_API_URL not found, using fallback');
+    return fallbackUrl;
+  }
+  
+  // Ensure the URL has a protocol
+  if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+    console.log('⚠️ API URL missing protocol, adding https://');
+    return `https://${envUrl}`;
+  }
+  
+  return envUrl;
+})();
 
 // Debug logging for environment
 if (typeof window !== 'undefined') {
@@ -18,6 +34,7 @@ if (typeof window !== 'undefined') {
   console.log('- NODE_ENV:', process.env.NODE_ENV);
   console.log('- NEXT_PUBLIC_API_URL from env:', process.env.NEXT_PUBLIC_API_URL);
   console.log('- Final API_BASE_URL:', API_BASE_URL);
+  console.log('- Type of API_BASE_URL:', typeof API_BASE_URL);
 }
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
