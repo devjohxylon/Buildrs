@@ -1,5 +1,18 @@
 {
   "version": 2,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "buildrs.net"
+        }
+      ],
+      "destination": "https://www.buildrs.net/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
