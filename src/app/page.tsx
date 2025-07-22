@@ -9,7 +9,16 @@ import {
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
+// Use environment variable with fallback for local development
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
+
+// Debug logging for environment
+if (typeof window !== 'undefined') {
+  console.log('🔧 Environment setup:');
+  console.log('- NODE_ENV:', process.env.NODE_ENV);
+  console.log('- NEXT_PUBLIC_API_URL from env:', process.env.NEXT_PUBLIC_API_URL);
+  console.log('- Final API_BASE_URL:', API_BASE_URL);
+}
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
 
@@ -104,11 +113,16 @@ export default function Home() {
   }, []);
 
   const fetchWaitlistCount = async () => {
-    console.log('Fetching from:', `${API_BASE_URL}/waitlist/count`); // Debug log
+    console.log('Environment check:');
+    console.log('- process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+    console.log('- API_BASE_URL:', API_BASE_URL);
+    console.log('- Full URL:', `${API_BASE_URL}/waitlist/count`);
+    
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
+      console.log('🚀 Starting fetch request...');
       const response = await fetch(`${API_BASE_URL}/waitlist/count`, {
         signal: controller.signal,
         headers: {
@@ -117,6 +131,8 @@ export default function Home() {
       });
 
       clearTimeout(timeoutId);
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
 
       if (response.ok) {
         const data = await response.json();
