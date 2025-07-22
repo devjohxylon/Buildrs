@@ -1,29 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { 
-  Terminal, 
-  Code, 
-  Users, 
-  Zap, 
-  ArrowRight, 
   Github, 
-  Activity,
-  Database,
-  Shield,
   Mail,
-  CheckCircle,
-  Coffee,
-  Cpu,
-  Brain,
-  Rocket,
-  Lock
+  CheckCircle
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
-const API_BASE_URL = 'https://buildrs-production.up.railway.app';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
 
@@ -45,27 +31,31 @@ export default function Home() {
   const [showCursor, setShowCursor] = useState(true);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [devName, setDevName] = useState('');
   const [isBooting, setIsBooting] = useState(true);
   const [waitlistCount, setWaitlistCount] = useState(0);
-  const [isBackendOnline, setIsBackendOnline] = useState(true);
+  const [isBackendOnline, setIsBackendOnline] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const funnyMessages = [
-    "// TODO: Add actual features",
-    "console.log('Why is this not working?');", 
-    "git commit -m 'It works on my machine 🤷‍♂️'",
-    "// This code was written at 3AM, good luck",
-    "const coffee = 'required';",
-    "// I'll refactor this later (narrator: they never did)",
+  const funnyMessages = useMemo(() => [
+    "// TODO: Sleep",
+    "git commit -m 'fixed bug, created 3 new ones'",
+    "// This code is self-documenting (narrator: it wasn&apos;t)",
+    "try { coffee() } catch (e) { tea() }",
+    "// I&apos;ll refactor this later (narrator: they never did)",
     "rm -rf node_modules && npm install // classic",
     "git push --force // YOLO",
-    "// Don't judge me, I'll fix this before launch",
+    "// There are only 2 hard problems in CS: cache invalidation and naming things",
+    "// Don&apos;t judge me, I&apos;ll fix this before launch",
     "sudo rm -rf / --no-preserve-root // just kidding",
     "npm install left-pad // the good old days",
     "git commit -m 'fixed bug' // what bug? nobody knows",
-    "// If you're reading this, I'm sorry",
-  ];
+    "// If you&apos;re reading this, I'm sorry",
+    "404: Social life not found",
+    "// Magic happens here (and by magic, I mean bugs)",
+    "sudo make me a sandwich",
+    "// If you&apos;re reading this, it&apos;s too late",
+    "// Works on my machine ¯\\_(ツ)_/¯"
+  ], []);
 
   const typeText = useCallback(async (text: string, speed: number = 40) => {
     setIsTyping(true);
@@ -118,7 +108,13 @@ export default function Home() {
 
   const fetchWaitlistCount = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/waitlist/count`);
+      const response = await fetch(`${API_BASE_URL}/waitlist/count`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
       if (response.ok) {
         const data = await response.json();
         setWaitlistCount(data.count);
@@ -127,7 +123,6 @@ export default function Home() {
         setIsBackendOnline(false);
       }
     } catch (error) {
-      console.error('Failed to fetch waitlist count:', error);
       setIsBackendOnline(false);
       // Keep count at 0 if API fails
     }
@@ -137,12 +132,20 @@ export default function Home() {
     e.preventDefault();
     if (!email) return;
     
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+    
     try {
       const response = await fetch(`${API_BASE_URL}/waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors',
         body: JSON.stringify({ email }),
       });
 
@@ -153,22 +156,20 @@ export default function Home() {
         fetchWaitlistCount();
         setTimeout(() => {
           setEmail('');
-          setDevName('');
           setIsSubmitted(false);
         }, 5000);
       } else {
         const error = await response.json();
         if (error.detail === "Email already on waitlist") {
-          alert("You're already on the waitlist! 🎉");
+          alert("You&apos;re already on the waitlist! 🎉");
         } else {
           alert("Oops! Something went wrong. Please try again.");
         }
       }
     } catch (error) {
-      console.error('Waitlist submission failed:', error);
       setIsBackendOnline(false);
       if (!isBackendOnline) {
-        alert("Backend is currently offline. We're working on it! 🚧");
+        alert("Backend is currently offline. We&apos;re working on it! 🚧");
       } else {
         alert("Network error. Please check your connection and try again.");
       }
@@ -209,7 +210,7 @@ export default function Home() {
                 transition={{ duration: 0.8 }}
               >
                 <div className="text-yellow-400 text-lg mb-6 terminal-text font-semibold">
-                  // Currently brewing something special...
+                  {`// Currently brewing something special...`}
                 </div>
                 
                 <h1 className="text-7xl md:text-8xl font-bold mb-8 title-text leading-tight">
@@ -219,7 +220,7 @@ export default function Home() {
                 <p className="text-base mb-12 text-gray-300 leading-relaxed font-medium max-w-xl">
                   Where developers swipe right on their next collaboration. 
                   <br />
-                  A swipe platform for finding coding partners. We're building the place where 
+                  A swipe platform for finding coding partners. We&apos;re building the place where 
                   developers discover projects, connect with builders, and create something amazing together.
                 </p>
 
@@ -227,7 +228,7 @@ export default function Home() {
                 <div className="terminal p-9 max-w-full mt-8">
                   <div className="terminal-content">
                     <div className="text-gray-400 text-base mb-5 terminal-text font-semibold">
-                      // Current developer status
+                      {`// Current developer status`}
                     </div>
                     <div className="space-y-4 text-base terminal-text">
                       <div className="flex items-center gap-4">
@@ -244,7 +245,7 @@ export default function Home() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-purple-400 text-lg">●</span>
-                        <span className="text-white font-medium">Bug count: It's not a bug, it's a feature</span>
+                        <span className="text-white font-medium">Bug count: It&apos;s not a bug, it&apos;s a feature</span>
                       </div>
                     </div>
                   </div>
@@ -327,7 +328,7 @@ export default function Home() {
                     >
                       <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
                       <div className="text-green-400 font-bold terminal-text text-base">
-                        You're in! 🎉
+                        You&apos;re in! 🎉
                       </div>
                     </motion.div>
                   )}

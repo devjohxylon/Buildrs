@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           <div className="terminal p-10">
             <h2 className="text-2xl font-bold mb-6 text-green-400">Our Privacy Commitment</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              At Buildrs, we believe your privacy is fundamental. We don't sell your data, we minimize what we collect, and we store sensitive information locally on your device whenever possible.
+              At Buildrs, we believe your privacy is fundamental. We don&apos;t sell your data, we minimize what we collect, and we store sensitive information locally on your device whenever possible.
             </p>
           </div>
 
@@ -94,14 +94,14 @@ export default function PrivacyPage() {
           <div className="terminal p-10">
             <h2 className="text-2xl font-bold mb-6 text-cyan-400">Cookies & Tracking</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              We use minimal cookies for essential functions like keeping you logged in. We don't use third-party advertising cookies or tracking scripts. You can disable cookies in your browser, though some features may not work properly.
+              We use minimal cookies for essential functions like keeping you logged in. We don&apos;t use third-party advertising cookies or tracking scripts. You can disable cookies in your browser, though some features may not work properly.
             </p>
           </div>
 
           <div className="terminal p-10">
             <h2 className="text-2xl font-bold mb-6 text-pink-400">Updates to This Policy</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              We may update this privacy policy occasionally. We'll notify users of significant changes via email or platform notifications. Continued use of Buildrs constitutes acceptance of updated policies.
+              We may update this privacy policy occasionally. We&apos;ll notify users of significant changes via email or platform notifications. Continued use of Buildrs constitutes acceptance of updated policies.
             </p>
           </div>
 
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
           <div className="terminal p-12 max-w-3xl w-full">
             <h2 className="text-2xl font-bold mb-6 text-center">Privacy Questions?</h2>
             <p className="text-gray-300 mb-8 text-lg leading-relaxed text-center">
-              We're transparent about our privacy practices and happy to answer any questions.
+              We&apos;re transparent about our privacy practices and happy to answer any questions.
             </p>
             <div className="flex justify-center">
               <a href="mailto:privacy@buildrs.dev" className="btn btn-primary text-lg py-4 px-8">

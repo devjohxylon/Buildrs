@@ -39,7 +39,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "upgrade-insecure-requests; default-src 'self' https://buildrs-production.up.railway.app; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app;"
+          "value": "upgrade-insecure-requests; default-src 'self' https://buildrs-production.up.railway.app https://*.railway.app; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app https://*.railway.app;"
         }
       ]
     }

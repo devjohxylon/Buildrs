@@ -21,12 +21,11 @@ export default function DocsPage() {
             <h3 className="text-2xl font-bold mb-8 text-green-400">Getting Started</h3>
             <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
               <p><strong className="text-white">1. Join the Waitlist</strong><br />
-              Sign up for early access while we're in alpha development.</p>
+              Sign up for early access while we&apos;re in alpha development.</p>
               
-              <p><strong className="text-white">2. Create Your Profile</strong><br />
-              Connect your GitHub and showcase your skills and interests.</p>
-              
-              <p><strong className="text-white">3. Start Swiping</strong><br />
+              <p><strong className="text-white">2. Complete Your Profile</strong><br />
+              Add your skills, interests, and what you&apos;re looking to build. The more details, the better matches!
+              <br /><br /><strong className="text-white">3. Start Swiping</strong><br />
               Browse developer profiles and project ideas to find matches.</p>
               
               <p><strong className="text-white">4. Collaborate</strong><br />
@@ -44,7 +43,7 @@ export default function DocsPage() {
             <div className="terminal p-10">
               <h3 className="text-2xl font-bold mb-6 text-blue-400">🔄 Swipe & Match</h3>
               <div className="text-gray-300 text-lg leading-relaxed space-y-4">
-                <p>Browse through developer profiles and project ideas. Swipe right on people you'd like to collaborate with.</p>
+                <p>Browse through developer profiles and project ideas. Swipe right on people you&apos;d like to collaborate with.</p>
                 <p>When both users swipe right, you get a match and can start chatting!</p>
               </div>
             </div>
@@ -69,7 +68,7 @@ export default function DocsPage() {
             <div className="terminal p-10">
               <h3 className="text-2xl font-bold mb-4 text-yellow-400">Developer Profiles</h3>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Showcase your GitHub activity, skills, and project interests. Let others know what you're passionate about building.
+                Showcase your GitHub activity, skills, and project interests. Let others know what you&apos;re passionate about building.
               </p>
             </div>
 
@@ -128,12 +127,12 @@ export default function DocsPage() {
               Join the waitlist and be among the first to try Buildrs.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <a href="/" className="btn btn-primary text-xl py-4 px-8 w-full sm:w-auto">
+              <Link href="/" className="inline-flex gap-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transform transition-all">
                 Join Waitlist
-              </a>
-              <a href="/features" className="btn btn-secondary text-xl py-4 px-8 w-full sm:w-auto">
+              </Link>
+              <Link href="/features" className="btn btn-secondary text-xl py-4 px-8 w-full sm:w-auto">
                 View Features
-              </a>
+              </Link>
             </div>
           </div>
         </div>

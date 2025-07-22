@@ -97,7 +97,7 @@ export default function SecurityPage() {
 
               <div>
                 <h3 className="text-white font-bold mb-3">Transparency</h3>
-                <p>We'll notify affected users within 72 hours of any security incident that may impact their data or account.</p>
+                <p>We&apos;ll notify affected users within 72 hours of any security incident that may impact their data or account.</p>
               </div>
 
             </div>

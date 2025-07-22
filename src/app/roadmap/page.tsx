@@ -18,7 +18,7 @@ export default function RoadmapPage() {
           <div className="terminal p-12 text-center">
             <h2 className="text-3xl font-bold mb-6">🚀 Currently in Alpha Development</h2>
             <p className="text-gray-300 text-xl leading-relaxed max-w-4xl mx-auto">
-              We're building the core platform and gathering feedback from early users. Join our waitlist to get early access!
+              We&apos;re building the core platform and gathering feedback from early users. Join our waitlist to get early access!
             </p>
           </div>
         </div>

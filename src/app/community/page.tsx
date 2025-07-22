@@ -37,7 +37,7 @@ export default function CommunityPage() {
               <div>
                 <h3 className="text-white font-bold mb-4 text-xl">🚀 Growth</h3>
                 <p className="text-gray-300 text-lg leading-relaxed">
-                  Support each other's learning journey. Share knowledge and celebrate wins together.
+                  Support each other&apos;s learning journey. Share knowledge and celebrate wins together.
                 </p>
               </div>
 
@@ -66,7 +66,7 @@ export default function CommunityPage() {
                 <h3 className="text-white font-bold mb-4 text-xl">✅ Do</h3>
                 <div className="text-gray-300 text-lg leading-relaxed space-y-3">
                   <p>• Be helpful and constructive in your feedback</p>
-                  <p>• Ask questions when you're unsure</p>
+                  <p>• Ask questions when you&apos;re unsure</p>
                   <p>• Share knowledge and resources generously</p>
                   <p>• Respect others' time and commitments</p>
                   <p>• Communicate clearly about project expectations</p>
@@ -74,7 +74,7 @@ export default function CommunityPage() {
               </div>
 
               <div>
-                <h3 className="text-white font-bold mb-4 text-xl">❌ Don't</h3>
+                <h3 className="text-white font-bold mb-4 text-xl">❌ Don&apos;t</h3>
                 <div className="text-gray-300 text-lg leading-relaxed space-y-3">
                   <p>• Use offensive, discriminatory, or harmful language</p>
                   <p>• Spam or self-promote excessively</p>
@@ -117,7 +117,7 @@ export default function CommunityPage() {
           <div className="terminal p-10">
             <h2 className="text-2xl font-bold mb-6 text-orange-400">For New Developers</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              New to coding? Welcome! Our community is here to support your journey. Don't hesitate to ask questions, share your learning projects, or look for mentorship opportunities. Everyone was a beginner once.
+              New to coding? Welcome! Our community is here to support your journey. Don&apos;t hesitate to ask questions, share your learning projects, or look for mentorship opportunities. Everyone was a beginner once.
             </p>
           </div>
 
@@ -131,9 +131,9 @@ export default function CommunityPage() {
               Help us maintain a positive community for everyone.
             </p>
             <div className="flex justify-center">
-              <a href="mailto:community@buildrs.dev" className="btn btn-primary text-lg py-4 px-8">
-                Contact Community Team
-              </a>
+                                <a href="mailto:community@buildrs.dev" className="btn btn-primary text-lg py-4 px-8">
+                    Contact Community Team
+                  </a>
             </div>
           </div>
         </div>

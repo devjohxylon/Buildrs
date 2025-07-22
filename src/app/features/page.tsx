@@ -119,12 +119,12 @@ export default function FeaturesPage() {
               Join thousands of developers building amazing projects together.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <a href="/" className="btn btn-primary text-xl py-4 px-8 w-full sm:w-auto">
+              <Link href="/" className="inline-flex gap-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transform transition-all">
                 Join Waitlist
-              </a>
-              <a href="/pricing" className="btn btn-secondary text-xl py-4 px-8 w-full sm:w-auto">
-                View Pricing
-              </a>
+              </Link>
+                              <Link href="/pricing" className="btn btn-secondary text-xl py-4 px-8 w-full sm:w-auto">
+                  View Pricing
+                </Link>
             </div>
           </div>
         </div>

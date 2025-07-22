@@ -156,7 +156,7 @@ export default function ContactPage() {
           <div className="terminal p-12 max-w-3xl w-full">
             <h2 className="text-2xl font-bold mb-6 text-center">Ready to Get in Touch?</h2>
             <p className="text-gray-300 mb-8 text-lg leading-relaxed text-center">
-              We'd love to hear from you. Choose the best way to reach our team.
+              We&apos;d love to hear from you. Choose the best way to reach our team.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <a href="mailto:hello@buildrs.dev" className="btn btn-primary text-lg py-4 px-8 w-full sm:w-auto">

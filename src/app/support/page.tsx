@@ -10,7 +10,7 @@ export default function SupportPage() {
             ← Back to Buildrs
           </Link>
           <h1 className="text-5xl font-bold terminal-text mt-8 mb-6">Support</h1>
-          <p className="text-gray-300 text-xl">We're here to help you succeed</p>
+          <p className="text-gray-300 text-xl">We&apos;re here to help you succeed</p>
         </div>
 
         {/* Quick Help */}
@@ -51,7 +51,7 @@ export default function SupportPage() {
             <div className="terminal p-10">
               <h3 className="text-2xl font-bold mb-6 text-yellow-400">📧 Email Support</h3>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                Send us an email and we'll get back to you within 24 hours.
+                Send us an email and we&apos;ll get back to you within 24 hours.
               </p>
               <a href="mailto:support@buildrs.dev" className="btn btn-primary text-lg py-4 px-8">
                 Email Support Team
@@ -90,7 +90,7 @@ export default function SupportPage() {
             <div className="terminal p-8">
               <h3 className="text-xl font-bold mb-4 text-white">How do I get started with Buildrs?</h3>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Join our waitlist while we're in alpha development. Once you have access, connect your GitHub account and complete your developer profile to start matching with collaborators.
+                Join our waitlist while we&apos;re in alpha development. Once you have access, connect your GitHub account and complete your developer profile to start matching with collaborators.
               </p>
             </div>
 

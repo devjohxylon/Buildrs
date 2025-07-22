@@ -37,7 +37,7 @@ export default function DevPreviewPage() {
                 </h1>
                 
                 <p className="text-gray-300 text-lg mb-8 terminal-text font-medium">
-                  You're viewing an early development build of the Buildrs platform. 
+                  You&apos;re viewing an early development build of the Buildrs platform. 
                   This preview demonstrates core functionality but is not yet ready for production use.
                 </p>
 

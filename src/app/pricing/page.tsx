@@ -125,7 +125,7 @@ export default function PricingPage() {
             <div className="terminal p-8">
               <h3 className="text-2xl font-bold mb-4 text-white">Can I cancel anytime?</h3>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Yes! Cancel your subscription anytime. You'll keep Pro features until your billing period ends.
+                Yes! Cancel your subscription anytime. You&apos;ll keep Pro features until your billing period ends.
               </p>
             </div>
             
