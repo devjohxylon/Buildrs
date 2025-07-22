@@ -53,14 +53,48 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isBooting) {
-        setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
-      }
-    }, 3000);
+    // Handle initial boot sequence
+    if (isBooting) {
+      setTerminalText('');
+      const bootSequence = 'Buildrs OS v0.1.0-probably-works\n\n[ OK ] Loading coffee.exe...\n[ OK ] Warming up rubber duck...\n[ WARN ] Stackoverflow.com: CONNECTION CRITICAL\n[ OK ] npm install anxiety\n\nlogin: dev\nPassword: hunter2\n\nWelcome to Buildrs! Where bugs become features ✨\n\ndev@chaos:~$ ';
+      
+      let i = 0;
+      const bootTyping = setInterval(() => {
+        setTerminalText(bootSequence.slice(0, i + 1));
+        i++;
+        if (i >= bootSequence.length) {
+          clearInterval(bootTyping);
+          setTimeout(() => {
+            setIsBooting(false);
+            setTerminalText('');
+            setCurrentMessage(0);
+          }, 2000);
+        }
+      }, 40);
+      
+      return () => clearInterval(bootTyping);
+    }
 
-    return () => clearInterval(interval);
-  }, [isBooting]);
+    // After boot, cycle through funny messages with typing effect
+    if (!isBooting) {
+      const message = funnyMessages[currentMessage];
+      let i = 0;
+      setTerminalText('');
+      
+      const messageTyping = setInterval(() => {
+        setTerminalText(message.slice(0, i + 1));
+        i++;
+        if (i >= message.length) {
+          clearInterval(messageTyping);
+          setTimeout(() => {
+            setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
+          }, 5000);
+        }
+      }, 100);
+
+      return () => clearInterval(messageTyping);
+    }
+  }, [currentMessage, isBooting, funnyMessages]);
 
   useEffect(() => {
     const cursorBlink = setInterval(() => {
