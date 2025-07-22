@@ -355,65 +355,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-800 py-16 px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            
-            {/* Brand */}
-            <div className="md:col-span-1">
-              <div className="text-xl font-bold terminal-text mb-4">BUILDRS</div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Where developers swipe right on their next collaboration. 
-                Connect, code, and build amazing things together.
-              </p>
-            </div>
-
-            {/* Product */}
-            <div>
-              <h3 className="text-white font-semibold mb-4 terminal-text">Product</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/docs" className="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="/features" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
-                <li><a href="/pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/roadmap" className="text-gray-400 hover:text-white transition-colors">Roadmap</a></li>
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="text-white font-semibold mb-4 terminal-text">Legal</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="/community" className="text-gray-400 hover:text-white transition-colors">Community Guidelines</a></li>
-                <li><a href="/security" className="text-gray-400 hover:text-white transition-colors">Security</a></li>
-              </ul>
-            </div>
-
-            {/* Connect */}
-            <div>
-              <h3 className="text-white font-semibold mb-4 terminal-text">Connect</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="https://github.com/devjohxylon/Buildrs" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">GitHub</a></li>
-                <li><a href="/discord" className="text-gray-400 hover:text-white transition-colors">Discord</a></li>
-                <li><a href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                <li><a href="/support" className="text-gray-400 hover:text-white transition-colors">Support</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 text-sm terminal-text">
-              © 2025 Buildrs. All rights reserved.
-            </p>
-            <p className="text-gray-500 text-sm terminal-text mt-4 md:mt-0">
-              Made with ☕ by developers, for developers
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
