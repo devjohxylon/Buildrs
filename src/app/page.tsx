@@ -32,6 +32,7 @@ export default function Home() {
   const [devName, setDevName] = useState('');
   const [isBooting, setIsBooting] = useState(true);
   const [waitlistCount, setWaitlistCount] = useState(0);
+  const [isBackendOnline, setIsBackendOnline] = useState(true);
 
   const funnyMessages = [
     "// TODO: Add actual features",
@@ -109,13 +110,17 @@ export default function Home() {
 
   const fetchWaitlistCount = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/waitlist/count`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app'}/waitlist/count`);
       if (response.ok) {
         const data = await response.json();
         setWaitlistCount(data.count);
+        setIsBackendOnline(true);
+      } else {
+        setIsBackendOnline(false);
       }
     } catch (error) {
       console.error('Failed to fetch waitlist count:', error);
+      setIsBackendOnline(false);
       // Keep count at 0 if API fails
     }
   };
@@ -125,7 +130,7 @@ export default function Home() {
     if (!email) return;
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/waitlist`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app'}/waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,6 +140,7 @@ export default function Home() {
 
       if (response.ok) {
         setIsSubmitted(true);
+        setIsBackendOnline(true);
         // Refresh the waitlist count after successful submission
         fetchWaitlistCount();
         setTimeout(() => {
@@ -152,7 +158,12 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Waitlist submission failed:', error);
-      alert("Network error. Please check your connection and try again.");
+      setIsBackendOnline(false);
+      if (!isBackendOnline) {
+        alert("Backend is currently offline. We're working on it! 🚧");
+      } else {
+        alert("Network error. Please check your connection and try again.");
+      }
     }
   };
 
@@ -291,8 +302,12 @@ export default function Home() {
                       </button>
                       <div className="text-center pt-2">
                         <div className="flex items-baseline justify-center gap-2 text-base terminal-text">
-                          <span className="text-yellow-400 font-bold text-lg">{waitlistCount.toLocaleString()}</span>
-                          <span className="text-gray-400 font-medium">on waitlist</span>
+                          <span className="text-yellow-400 font-bold text-lg">
+                            {isBackendOnline ? waitlistCount.toLocaleString() : '---'}
+                          </span>
+                          <span className="text-gray-400 font-medium">
+                            on waitlist {!isBackendOnline && '(offline)'}
+                          </span>
                         </div>
                       </div>
                     </form>
