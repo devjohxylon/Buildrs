@@ -45,14 +45,8 @@ export default function SwipeCard({ card, onSwipe, onCardLeftScreen }: SwipeCard
     const snippets = [
       "const buildCool = async () => {\n  return await collaboration();\n};",
       "function findPartner() {\n  return devs.filter(dev => \n    dev.vibe === 'awesome'\n  );\n}",
-<<<<<<< HEAD
-      "{/* TODO: Build something epic */}\nif (skills.match(yours)) {\n  lets.collaborate();\n}",
-      "const passion = skills + motivation;\nif (passion > 9000) {\n  return 'perfect match!';\n}",
-      "while (building.isAwesome) {\n  addMoreFeatures();\n  drinkCoffee();\n}"
-=======
       "if (skills.match(yours)) {\n  lets.collaborate();\n}",
       "const match = developers\n  .find(dev => dev.passion)\n  .code.together();"
->>>>>>> eece334 (Fix backend imports and TypeScript configuration)
     ];
     return snippets[Math.floor(Math.random() * snippets.length)];
   };
