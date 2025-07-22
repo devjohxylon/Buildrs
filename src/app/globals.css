@@ -474,3 +474,308 @@ a:focus {
   background: var(--text-primary);
   color: var(--bg-primary);
 }
+
+/* Responsive Mobile-First Optimizations */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .terminal {
+    padding: 12px;
+    padding-top: 36px;
+    margin: 6px;
+    border-radius: 6px;
+  }
+  
+  .terminal::before {
+    top: 12px;
+    left: 16px;
+    font-size: 12px;
+  }
+  
+  .terminal-content {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .card-content {
+    padding: 16px;
+  }
+  
+  /* Mobile-optimized buttons */
+  .btn {
+    padding: 14px 20px;
+    font-size: 14px;
+    min-height: 48px;
+    border-radius: 6px;
+    /* Better touch targets */
+    min-width: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .action-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    /* Better touch experience */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile typography */
+  .terminal-text {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+  }
+  
+  .title-text {
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  
+  /* Mobile-specific spacing */
+  h1, h2, h3 {
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Improve form controls on mobile */
+  input[type="email"],
+  input[type="text"],
+  input[type="password"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 16px;
+    border-radius: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  /* Mobile navigation */
+  nav {
+    padding: 0 16px;
+  }
+  
+  /* Better scrolling */
+  html {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+  
+  .terminal {
+    padding: 10px;
+    padding-top: 32px;
+    margin: 4px;
+  }
+  
+  .terminal-content {
+    padding: 12px;
+    font-size: 13px;
+  }
+  
+  .btn {
+    padding: 12px 16px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+  
+  .terminal-text {
+    font-size: 13px;
+  }
+  
+  .title-text {
+    font-size: 16px;
+  }
+  
+  /* Smaller spacing on very small screens */
+  .space-y-8 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.75rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .terminal-text,
+  .title-text {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+  .terminal {
+    padding: 8px;
+    padding-top: 28px;
+  }
+  
+  .terminal-content {
+    padding: 12px;
+  }
+  
+  /* Compact navigation in landscape */
+  nav {
+    height: 48px;
+  }
+  
+  /* Adjust section padding in landscape */
+  section {
+    padding-top: 48px;
+    padding-bottom: 32px;
+  }
+}
+
+/* Touch-specific improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch devices */
+  .btn:hover {
+    transform: none; /* Remove hover transforms on touch */
+  }
+  
+  .action-btn:hover {
+    transform: none;
+  }
+  
+  /* Better active states for touch */
+  .btn:active {
+    transform: scale(0.98);
+    background: var(--text-primary);
+    color: var(--bg-primary);
+  }
+  
+  .action-btn:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Dark mode improvements for mobile */
+@media (prefers-color-scheme: dark) {
+  /* Better contrast on mobile screens */
+  .terminal {
+    border-color: #444444;
+  }
+  
+  .terminal-text {
+    color: #f0f0f0;
+  }
+  
+  input {
+    background: #0a0a0a;
+    border-color: #444444;
+    color: #f0f0f0;
+  }
+  
+  input:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Disable matrix scan lines for motion sensitivity */
+  body::before {
+    display: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .terminal {
+    border-width: 3px;
+    border-color: #ffffff;
+  }
+  
+  .btn {
+    border-width: 3px;
+  }
+  
+  .terminal-text,
+  .title-text {
+    color: #ffffff;
+    font-weight: 700;
+  }
+}
+
+/* Focus improvements for mobile */
+.btn:focus-visible,
+.action-btn:focus-visible,
+input:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Prevent zoom on input focus (iOS Safari) */
+@supports (-webkit-touch-callout: none) {
+  input[type="email"],
+  input[type="text"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Safe area handling for notched devices */
+@supports (padding: max(0px)) {
+  .fixed-nav {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+}
+
+/* Improve tap highlight */
+* {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection for content areas */
+p, span, div.terminal-content, input, textarea {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

@@ -235,19 +235,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
       <MatrixBackground />
       
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-gray-400 font-mono text-sm">
+      {/* Mobile-optimized Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="text-gray-400 font-mono text-xs sm:text-sm">
               buildrs@terminal:~$
             </div>
           </div>
           
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             <span className="text-gray-500 font-mono text-xs px-2 py-1 bg-gray-900 rounded border border-gray-700">
               v0.1.0-alpha
             </span>
@@ -256,85 +256,86 @@ export default function Home() {
                 ? 'text-green-400 border-green-400/30 bg-green-400/10' 
                 : 'text-red-400 border-red-400/30 bg-red-400/10'
             }`}>
-              API {isBackendOnline ? 'ONLINE' : 'OFFLINE'}
+              API {isBackendOnline ? 'ON' : 'OFF'}
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero - More organic layout */}
-      <section className="pt-24 pb-32 px-8 relative">
+      {/* Mobile-first Hero Section */}
+      <section className="pt-16 sm:pt-24 pb-16 sm:pb-32 px-4 sm:px-8 relative">
         <div className="max-w-7xl mx-auto">
           <div className="relative">
-            {/* Main content - asymmetric */}
-            <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Mobile-optimized layout */}
+            <div className="space-y-8 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start lg:space-y-0">
+              
+              {/* Main content - mobile-first */}
               <motion.div
-                className="lg:col-span-1 mt-20"
+                className="order-2 lg:order-1 lg:mt-20"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="text-yellow-400 text-lg mb-6 terminal-text font-semibold">
-                  {/* Currently brewing something special... */}
-                </div>
-                
-                <h1 className="text-7xl md:text-8xl font-bold mb-8 title-text leading-tight">
-                  BUILDRS
-                </h1>
-                
-                <p className="text-base mb-12 text-gray-300 leading-relaxed font-medium max-w-xl">
-                  Where developers swipe right on their next collaboration. 
-                  <br />
-                  A swipe platform for finding coding partners. We&apos;re building the place where 
-                  developers discover projects, connect with builders, and create something amazing together.
-                </p>
+                <div className="text-center lg:text-left">
+                  <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 sm:mb-8 title-text leading-tight">
+                    BUILDRS
+                  </h1>
+                  
+                  <p className="text-sm sm:text-base mb-8 sm:mb-12 text-gray-300 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
+                    Where developers swipe right on their next collaboration. 
+                    <br className="hidden sm:block" />
+                    A swipe platform for finding coding partners. We&apos;re building the place where 
+                    developers discover projects, connect with builders, and create something amazing together.
+                  </p>
 
-                {/* Fun developer joke - aligned with right terminals */}
-                <div className="terminal p-9 max-w-full mt-8">
-                  <div className="terminal-content">
-                    <div className="text-gray-400 text-base mb-5 terminal-text font-semibold">
-                      {/* Current developer status */}
-                    </div>
-                    <div className="space-y-4 text-base terminal-text">
-                      <div className="flex items-center gap-4">
-                        <span className="text-green-400 text-lg">●</span>
-                        <span className="text-white font-medium">Coffee levels: MAXIMUM</span>
+                  {/* Mobile-optimized status section */}
+                  <div className="terminal p-4 sm:p-6 lg:p-9 mt-6 sm:mt-8">
+                    <div className="terminal-content">
+                      <div className="text-gray-400 text-sm sm:text-base mb-3 sm:mb-5 terminal-text font-semibold">
+                        {/* Current developer status */}
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-yellow-400 text-lg">●</span>
-                        <span className="text-white font-medium">Rubber duck debugger: ON STANDBY</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-red-400 text-lg">●</span>
-                        <span className="text-white font-medium">Sleep schedule: 404 NOT FOUND</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-purple-400 text-lg">●</span>
-                        <span className="text-white font-medium">Bug count: It&apos;s not a bug, it&apos;s a feature</span>
+                      <div className="space-y-2 sm:space-y-4 text-sm sm:text-base terminal-text">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <span className="text-green-400 text-base sm:text-lg">●</span>
+                          <span className="text-white font-medium">Coffee levels: MAXIMUM</span>
+                        </div>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <span className="text-yellow-400 text-base sm:text-lg">●</span>
+                          <span className="text-white font-medium">Rubber duck debugger: ON STANDBY</span>
+                        </div>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <span className="text-red-400 text-base sm:text-lg">●</span>
+                          <span className="text-white font-medium">Sleep schedule: 404 NOT FOUND</span>
+                        </div>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <span className="text-purple-400 text-base sm:text-lg">●</span>
+                          <span className="text-white font-medium">Bug count: It&apos;s not a bug, it&apos;s a feature</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Terminal - positioned differently */}
+              {/* Terminal and form - mobile-first */}
               <motion.div
-                className="lg:col-span-1 relative mt-8"
+                className="order-1 lg:order-2 lg:mt-8"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <div className="terminal h-96 mb-6">
+                {/* Mobile-optimized terminal */}
+                <div className="terminal h-64 sm:h-80 lg:h-96 mb-4 sm:mb-6">
                   <div className="terminal-content">
                     {isBooting ? (
-                      <div className="terminal-text text-base">
+                      <div className="terminal-text text-sm sm:text-base">
                         <div className="text-white whitespace-pre-line">
                           {terminalText}
                           <span className={`ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'}`}>▋</span>
                         </div>
                       </div>
                     ) : (
-                      <div className="terminal-text text-base">
+                      <div className="terminal-text text-sm sm:text-base">
                         <div className="text-green-400">dev@buildrs</div>
                         <div className="text-white whitespace-pre-line mt-2">
                           {terminalText}
@@ -345,15 +346,15 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Floating waitlist form */}
+                {/* Mobile-optimized waitlist form */}
                 <motion.div
-                  className="terminal p-10"
+                  className="terminal p-6 sm:p-8 lg:p-10"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
                 >
-                  <div className="text-white terminal-text font-semibold mb-8 flex items-center gap-3 text-lg">
-                    <Mail size={20} />
+                  <div className="text-white terminal-text font-semibold mb-6 sm:mb-8 flex items-center gap-3 text-base sm:text-lg">
+                    <Mail size={18} className="sm:w-5 sm:h-5" />
                     Get early access
                   </div>
                   
@@ -364,29 +365,29 @@ export default function Home() {
                   )}
                   
                   {!isSubmitted ? (
-                    <form onSubmit={handleWaitlistSubmit} className="space-y-5">
+                    <form onSubmit={handleWaitlistSubmit} className="space-y-4 sm:space-y-5">
                       <input
                         type="email"
                         placeholder="your@email.com"
                         value={email}
                         onChange={(e) => {
                           setEmail(e.target.value);
-                          setError(null); // Clear error when user types
+                          setError(null);
                         }}
                         required
                         disabled={isSubmitting}
-                        className="w-full bg-gray-900 border border-gray-700 rounded px-4 py-3 text-white terminal-text text-base focus:border-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-gray-900 border border-gray-700 rounded px-4 py-3 sm:py-4 text-white terminal-text text-sm sm:text-base focus:border-white focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       <button
                         type="submit"
-                        className="w-full btn btn-primary text-base py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full btn btn-primary text-sm sm:text-base py-3 sm:py-4 font-semibold disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
                         disabled={!email || isSubmitting}
                       >
                         {isSubmitting ? 'JOINING...' : 'JOIN WAITLIST'}
                       </button>
                       <div className="text-center pt-2">
-                        <div className="flex items-baseline justify-center gap-2 text-base terminal-text">
-                          <span className="text-yellow-400 font-bold text-lg">
+                        <div className="flex items-baseline justify-center gap-2 text-sm sm:text-base terminal-text">
+                          <span className="text-yellow-400 font-bold text-base sm:text-lg">
                             {isBackendOnline ? waitlistCount.toLocaleString() : '---'}
                           </span>
                           <span className="text-gray-400 font-medium">
@@ -401,8 +402,8 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="text-center py-6"
                     >
-                      <CheckCircle size={32} className="text-green-400 mx-auto mb-3" />
-                      <div className="text-green-400 font-bold terminal-text text-base">
+                      <CheckCircle size={28} className="sm:w-8 sm:h-8 text-green-400 mx-auto mb-3" />
+                      <div className="text-green-400 font-bold terminal-text text-sm sm:text-base">
                         You&apos;re in! 🎉
                       </div>
                     </motion.div>
@@ -414,57 +415,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Behind the scenes - asymmetric section */}
-      <section className="py-32 px-8 relative">
+      {/* Mobile-optimized "Building in Public" section */}
+      <section className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 relative">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-16 items-start">
+          <div className="space-y-8 lg:grid lg:grid-cols-3 lg:gap-16 lg:items-start lg:space-y-0">
             
-            {/* Left: Title and description */}
-            <div className="lg:col-span-1">
-              <h2 className="text-4xl font-bold mb-6 title-text">
+            {/* Mobile-first title and description */}
+            <div className="lg:col-span-1 text-center lg:text-left">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 title-text">
                 Building in
                 <br />
                 Public
               </h2>
-              <p className="text-gray-300 leading-relaxed mb-8 text-lg font-medium">
+              <p className="text-gray-300 leading-relaxed mb-6 sm:mb-8 text-base sm:text-lg font-medium">
                 Follow our development journey. Every commit, every decision, 
                 every debugging session at 3am.
               </p>
               <a href="https://github.com/devjohxylon/Buildrs" target="_blank" rel="noopener noreferrer">
-                <button className="btn btn-secondary flex items-center gap-3 px-6 py-3 font-semibold">
-                  <Github size={18} />
+                <button className="btn btn-secondary flex items-center gap-3 px-4 sm:px-6 py-3 font-semibold mx-auto lg:mx-0 touch-manipulation">
+                  <Github size={16} className="sm:w-[18px] sm:h-[18px]" />
                   Follow Progress
                 </button>
               </a>
             </div>
             
-            {/* Right: Development log */}
+            {/* Mobile-optimized development log */}
             <div className="lg:col-span-2">
-              <div className="terminal p-8">
-                <div className="space-y-4 text-base">
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 w-16 font-mono text-sm">1d ago</span>
-                    <span className="text-green-400 text-lg">●</span>
+              <div className="terminal p-4 sm:p-6 lg:p-8">
+                <div className="space-y-3 sm:space-y-4 text-sm sm:text-base">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-gray-400 w-12 sm:w-16 font-mono text-xs sm:text-sm">1d ago</span>
+                    <span className="text-green-400 text-base sm:text-lg">●</span>
                     <span className="text-white font-medium">Completed landing page design</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 w-16 font-mono text-sm">2d ago</span>
-                    <span className="text-green-400 text-lg">●</span>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-gray-400 w-12 sm:w-16 font-mono text-xs sm:text-sm">2d ago</span>
+                    <span className="text-green-400 text-base sm:text-lg">●</span>
                     <span className="text-white font-medium">Implemented terminal UI theme</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 w-16 font-mono text-sm">3d ago</span>
-                    <span className="text-yellow-400 text-lg">●</span>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-gray-400 w-12 sm:w-16 font-mono text-xs sm:text-sm">3d ago</span>
+                    <span className="text-yellow-400 text-base sm:text-lg">●</span>
                     <span className="text-white font-medium">Started swipe interface components</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 w-16 font-mono text-sm">1w ago</span>
-                    <span className="text-blue-400 text-lg">●</span>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-gray-400 w-12 sm:w-16 font-mono text-xs sm:text-sm">1w ago</span>
+                    <span className="text-blue-400 text-base sm:text-lg">●</span>
                     <span className="text-white font-medium">Set up Next.js project structure</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-400 w-16 font-mono text-sm">Next</span>
-                    <span className="text-gray-400 text-lg">○</span>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <span className="text-gray-400 w-12 sm:w-16 font-mono text-xs sm:text-sm">Next</span>
+                    <span className="text-gray-400 text-base sm:text-lg">○</span>
                     <span className="text-gray-400 font-medium">Backend API development</span>
                   </div>
                 </div>
