@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
@@ -14,6 +14,16 @@ from schemas import WaitlistCreate, WaitlistResponse
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
+class CustomHeaderMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Add security headers
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        return response
+
 app = FastAPI(
     title="Buildrs API",
     description="Backend API for Buildrs - Developer Collaboration Platform",
@@ -21,17 +31,16 @@ app = FastAPI(
 )
 
 # Security middleware
-if not config('DEVELOPMENT', cast=bool, default=False):
-    app.add_middleware(HTTPSRedirectMiddleware)
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=[
-            "buildrs-production.up.railway.app",
-            "*.railway.app",
-            "buildrs.net",
-            "www.buildrs.net"
-        ]
-    )
+app.add_middleware(CustomHeaderMiddleware)
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[
+        "buildrs-production.up.railway.app",
+        "*.railway.app",
+        "buildrs.net",
+        "www.buildrs.net"
+    ]
+)
 
 # CORS middleware
 app.add_middleware(
@@ -48,6 +57,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # Dependency to get database session
