@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
@@ -18,16 +20,26 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Security middleware
+if not config('DEVELOPMENT', cast=bool, default=False):
+    app.add_middleware(HTTPSRedirectMiddleware)
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            "buildrs-production.up.railway.app",
+            "*.railway.app"
+        ]
+    )
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
         "https://buildrs.vercel.app",
         "https://*.vercel.app",
         "https://buildrs.dev",
         "https://*.buildrs.dev",
-        "https://buildrs-production.up.railway.app"
+        "http://localhost:3000"  # Only allow HTTP for local development
     ],
     allow_credentials=True,
     allow_methods=["*"],
