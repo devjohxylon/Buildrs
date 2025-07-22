@@ -60,6 +60,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-white`}

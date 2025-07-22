@@ -24,11 +24,11 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "default-src 'self' https://buildrs-production.up.railway.app; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app;"
+    value: "upgrade-insecure-requests; default-src https: 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://buildrs-production.up.railway.app; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; require-trusted-types-for 'script'"
   },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()'
+    value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
   },
   {
     key: 'Cross-Origin-Opener-Policy',
@@ -46,13 +46,9 @@ const securityHeaders = [
 
 const nextConfig = {
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has type errors.
     ignoreBuildErrors: true,
   },
   images: {
