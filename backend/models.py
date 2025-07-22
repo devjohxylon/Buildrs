@@ -7,7 +7,7 @@ class WaitlistEntry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.current_timestamp())
     
     def __repr__(self):
         return f"<WaitlistEntry(email='{self.email}')>" 
