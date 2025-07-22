@@ -27,7 +27,9 @@ if not config('DEVELOPMENT', cast=bool, default=False):
         TrustedHostMiddleware,
         allowed_hosts=[
             "buildrs-production.up.railway.app",
-            "*.railway.app"
+            "*.railway.app",
+            "buildrs.net",
+            "www.buildrs.net"
         ]
     )
 
@@ -39,6 +41,8 @@ app.add_middleware(
         "https://*.vercel.app",
         "https://buildrs.dev",
         "https://*.buildrs.dev",
+        "https://buildrs.net",
+        "https://www.buildrs.net",
         "http://localhost:3000"  # Only allow HTTP for local development
     ],
     allow_credentials=True,
