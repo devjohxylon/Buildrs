@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
+const API_BASE_URL = 'https://buildrs-production.up.railway.app';
+
 export default function Home() {
   const [terminalText, setTerminalText] = useState('');
   const [currentMessage, setCurrentMessage] = useState(0);
@@ -48,53 +50,17 @@ export default function Home() {
     "npm install left-pad // the good old days",
     "git commit -m 'fixed bug' // what bug? nobody knows",
     "// If you're reading this, I'm sorry",
-    "const isProduction = false; // always",
-    "// This function is cursed, touch at your own risk"
   ];
 
   useEffect(() => {
-    // Handle initial boot sequence
-    if (isBooting) {
-      setTerminalText('');
-      const bootSequence = 'Buildrs OS v0.1.0-probably-works\n\n[ OK ] Loading coffee.exe...\n[ OK ] Warming up rubber duck...\n[ WARN ] Stackoverflow.com: CONNECTION CRITICAL\n[ OK ] npm install anxiety\n\nlogin: dev\nPassword: hunter2\n\nWelcome to Buildrs! Where bugs become features ✨\n\ndev@chaos:~$ ';
-      
-      let i = 0;
-      const bootTyping = setInterval(() => {
-        setTerminalText(bootSequence.slice(0, i + 1));
-        i++;
-        if (i >= bootSequence.length) {
-          clearInterval(bootTyping);
-          setTimeout(() => {
-            setIsBooting(false);
-            setTerminalText('');
-            setCurrentMessage(0);
-          }, 2000);
-        }
-      }, 40);
-      
-      return () => clearInterval(bootTyping);
-    }
+    const interval = setInterval(() => {
+      if (!isBooting) {
+        setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
+      }
+    }, 3000);
 
-    // After boot, just cycle through funny messages
-    if (!isBooting) {
-      const message = funnyMessages[currentMessage];
-      let i = 0;
-      setTerminalText('');
-      
-      const messageTyping = setInterval(() => {
-        setTerminalText(message.slice(0, i + 1));
-        i++;
-        if (i >= message.length) {
-          clearInterval(messageTyping);
-          setTimeout(() => {
-            setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
-          }, 5000);
-        }
-      }, 100);
-      
-      return () => clearInterval(messageTyping);
-    }
-  }, [currentMessage, isBooting]);
+    return () => clearInterval(interval);
+  }, [isBooting]);
 
   useEffect(() => {
     const cursorBlink = setInterval(() => {
@@ -110,7 +76,7 @@ export default function Home() {
 
   const fetchWaitlistCount = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app'}/waitlist/count`);
+      const response = await fetch(`${API_BASE_URL}/waitlist/count`);
       if (response.ok) {
         const data = await response.json();
         setWaitlistCount(data.count);
@@ -130,7 +96,7 @@ export default function Home() {
     if (!email) return;
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app'}/waitlist`, {
+      const response = await fetch(`${API_BASE_URL}/waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
