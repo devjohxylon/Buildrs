@@ -6,11 +6,11 @@ from decouple import config as env_config
 import sys
 from pathlib import Path
 
-# Add the app directory to the Python path
+# Add the backend directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from app.models import Base
-from app.database import DATABASE_URL
+from models import Base
+from database import DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
