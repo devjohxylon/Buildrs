@@ -104,6 +104,7 @@ export default function Home() {
   }, []);
 
   const fetchWaitlistCount = async () => {
+    console.log('Fetching from:', `${API_BASE_URL}/waitlist/count`); // Debug log
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
