@@ -26,7 +26,8 @@ app.add_middleware(
         "https://buildrs.vercel.app",
         "https://*.vercel.app",
         "https://buildrs.dev",
-        "https://*.buildrs.dev"
+        "https://*.buildrs.dev",
+        "https://buildrs-production.up.railway.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
