@@ -5,10 +5,10 @@ builder = "nixpacks"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
-startCommand = "cd /app && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'"
+startCommand = "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'"
 
-[[services]]
-name = "buildrs-api"
+[variables]
+PYTHONPATH = "/app"
 
 [nixpacks.variables]
 NIXPACKS_PYTHON_VERSION = "3.11" 
