@@ -48,8 +48,6 @@ app.add_middleware(
     allow_origins=[
         "https://buildrs.vercel.app",
         "https://*.vercel.app",
-        "https://buildrs.dev",
-        "https://*.buildrs.dev",
         "https://buildrs.net",
         "https://www.buildrs.net",
         "http://localhost:3000"  # Only allow HTTP for local development
