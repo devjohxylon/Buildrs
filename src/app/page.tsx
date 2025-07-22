@@ -9,7 +9,10 @@ import {
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
 
+<<<<<<< HEAD
 // Use environment variable with fallback for local development
+=======
+>>>>>>> eece334 (Fix backend imports and TypeScript configuration)
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://buildrs-production.up.railway.app';
 
 const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
@@ -126,6 +129,12 @@ export default function Home() {
         setError('Backend service unavailable');
       }
     } catch (error) {
+<<<<<<< HEAD
+=======
+      console.error('Failed to fetch waitlist count:', error);
+      // Add more context to the error message
+      console.error('Error details:', error);
+>>>>>>> eece334 (Fix backend imports and TypeScript configuration)
       setIsBackendOnline(false);
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -182,6 +191,12 @@ export default function Home() {
         }
       }
     } catch (error) {
+<<<<<<< HEAD
+=======
+      console.error('Failed to submit waitlist entry:', error);
+      // Add more context to the error message
+      console.error('Error details:', error);
+>>>>>>> eece334 (Fix backend imports and TypeScript configuration)
       setIsBackendOnline(false);
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
