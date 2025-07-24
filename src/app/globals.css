@@ -82,7 +82,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Simple terminal scan line effect - disabled on mobile for performance */
+/* Simple terminal scan line effect - disabled for cleaner look */
+/*
 @media (min-width: 768px) {
 body::before {
   content: '';
@@ -104,6 +105,7 @@ body::before {
   animation: scan 0.15s linear infinite;
   }
 }
+*/
 
 @keyframes scan {
   0% { transform: translateY(0px); }

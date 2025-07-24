@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, MessageSquare, Phone, MapPin } from 'lucide-react';
+import { ArrowLeft, Mail, MessageSquare, Users, Github } from 'lucide-react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -144,57 +144,75 @@ export default function ContactPage() {
             <div className="bg-black border border-gray-700 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Mail className="text-blue-400" size={20} />
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <Mail className="text-white" size={24} />
+                  </div>
                   <div>
-                    <p className="font-medium">Email</p>
+                    <p className="font-semibold text-lg">Email</p>
                     <p className="text-gray-400">hello@buildrs.net</p>
+                    <p className="text-sm text-gray-500">For general inquiries and support</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="text-blue-400" size={20} />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="text-white" size={24} />
+                  </div>
                   <div>
-                    <p className="font-medium">Discord</p>
-                    <p className="text-gray-400">@buildrs</p>
+                    <p className="font-semibold text-lg">Community Forum</p>
+                    <Link href="/forums" className="text-blue-400 hover:text-blue-300">
+                      Visit Forums
+                    </Link>
+                    <p className="text-sm text-gray-500">Join discussions and get help from the community</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <Phone className="text-blue-400" size={20} />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
+                    <Github className="text-white" size={24} />
+                  </div>
                   <div>
-                    <p className="font-medium">Phone</p>
-                    <p className="text-gray-400">+1 (555) 123-4567</p>
+                    <p className="font-semibold text-lg">GitHub</p>
+                    <a href="https://github.com/devjohxylon/Buildrs" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
+                      @devjohxylon/Buildrs
+                    </a>
+                    <p className="text-sm text-gray-500">Open source contributions and issues</p>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <MapPin className="text-blue-400" size={20} />
-                  <div>
-                    <p className="font-medium">Location</p>
-                    <p className="text-gray-400">San Francisco, CA</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-black border border-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-bold mb-4">Office Hours</h3>
-              <div className="space-y-2 text-gray-400">
-                <p>Monday - Friday: 9:00 AM - 6:00 PM PST</p>
-                <p>Saturday: 10:00 AM - 4:00 PM PST</p>
-                <p>Sunday: Closed</p>
               </div>
             </div>
 
             <div className="bg-black border border-gray-700 rounded-lg p-6">
               <h3 className="text-xl font-bold mb-4">Response Time</h3>
-              <div className="space-y-2 text-gray-400">
-                <p>• General inquiries: 24-48 hours</p>
-                <p>• Technical support: 4-8 hours</p>
-                <p>• Bug reports: 2-4 hours</p>
-                <p>• Feature requests: 1-2 business days</p>
+              <div className="space-y-3 text-gray-400">
+                <div className="flex justify-between">
+                  <span>General inquiries</span>
+                  <span className="text-green-400">24-48 hours</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Technical support</span>
+                  <span className="text-blue-400">4-8 hours</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Bug reports</span>
+                  <span className="text-orange-400">2-4 hours</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Feature requests</span>
+                  <span className="text-purple-400">1-2 business days</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h3 className="text-xl font-bold mb-4">Before You Contact Us</h3>
+              <div className="space-y-2 text-gray-400 text-sm">
+                <p>• Check our <Link href="/docs" className="text-blue-400 hover:text-blue-300">documentation</Link> for common questions</p>
+                <p>• Visit our <Link href="/forums" className="text-blue-400 hover:text-blue-300">community forums</Link> for peer support</p>
+                <p>• Review our <Link href="/roadmap" className="text-blue-400 hover:text-blue-300">roadmap</Link> for upcoming features</p>
+                <p>• For bugs, please include steps to reproduce and your environment details</p>
               </div>
             </div>
           </div>
