@@ -2,84 +2,140 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Terminal, Heart, Users } from 'lucide-react';
-import SwipeInterface from '@/components/SwipeInterface';
+import { ArrowLeft, Heart, X, MessageSquare, User, Code } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
+import LoginModal from '@/components/LoginModal';
 
 export default function SwipeInterfacePage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [filter, setFilter] = useState<'all' | 'profiles' | 'projects'>('all');
 
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+    }
+  }, [isAuthenticated]);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black text-white lg:ml-64 flex items-center justify-center">
-        <div className="text-center">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-4"
-          >
-            <Terminal size={48} className="text-white mx-auto mb-4" />
-            <div className="text-white font-mono text-lg">
-              Initializing Developer Discovery...
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 1.5 }}
-            className="h-1 bg-white rounded"
-          />
+      <>
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-6">
+            <div className="text-6xl mb-4">💕</div>
+            <h1 className="text-2xl font-bold mb-4">Join Buildrs to start swiping</h1>
+            <p className="text-gray-400 mb-6">
+              Discover amazing developers and projects through our swipe interface.
+            </p>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
+            >
+              Get Started
+            </button>
+          </div>
         </div>
-      </div>
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          feature="swipe interface"
+        />
+      </>
     );
   }
 
   return (
     <div className="min-h-screen bg-black text-white lg:ml-64">
-      {/* Header */}
-      <div className="bg-black">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/swipe"
-                className="bg-black hover:bg-gray-900 text-white px-4 py-2 rounded-lg border border-gray-700 transition-colors flex items-center gap-2"
-              >
-                <ArrowLeft size={16} />
-                Back to Discovery
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold">Developer Discovery</h1>
-                <p className="text-gray-400 text-sm">
-                  Swipe through developer profiles
-                </p>
-              </div>
-            </div>
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <Link href="/swipe" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-lg transition-colors mb-4">
+            <ArrowLeft size={20} />
+            <span>Back to Swipe</span>
+          </Link>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">Swipe Interface</h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Experience the future of developer matching and project discovery.
+          </p>
+        </div>
 
-            <div className="flex items-center gap-4">
-              <Link href="/matches">
-                <button className="flex items-center gap-2 text-sm bg-green-400/10 hover:bg-green-400/20 text-green-400 px-3 py-2 rounded-lg transition-colors">
-                  <Heart size={16} />
-                  <span>View matches</span>
-                </button>
-              </Link>
-            </div>
+        {/* Filter Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-6 py-2 rounded-md transition-colors ${
+                filter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilter('profiles')}
+              className={`px-6 py-2 rounded-md transition-colors ${
+                filter === 'profiles'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <User className="inline mr-2" size={16} />
+              Profiles
+            </button>
+            <button
+              onClick={() => setFilter('projects')}
+              className={`px-6 py-2 rounded-md transition-colors ${
+                filter === 'projects'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Code className="inline mr-2" size={16} />
+              Projects
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Swipe Interface */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <SwipeInterface />
+        {/* Swipe Area */}
+        <div className="bg-black border border-gray-700 rounded-lg p-8 text-center">
+          <div className="text-6xl mb-4">🎯</div>
+          <h2 className="text-2xl font-bold mb-4">No More Cards</h2>
+          <p className="text-gray-400 mb-6">
+            You've seen all available {filter === 'profiles' ? 'profiles' : filter === 'projects' ? 'projects' : 'items'}.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => setFilter('all')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+            >
+              Reset Filters
+            </button>
+            <Link
+              href="/swipe"
+              className="bg-gray-800 hover:bg-gray-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+            >
+              Back to Swipe
+            </Link>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div className="bg-black border border-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-blue-400 mb-2">0</div>
+            <div className="text-gray-400">Cards Swiped</div>
+          </div>
+          <div className="bg-black border border-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-green-400 mb-2">0</div>
+            <div className="text-gray-400">Matches</div>
+          </div>
+          <div className="bg-black border border-gray-700 rounded-lg p-6 text-center">
+            <div className="text-3xl font-bold text-purple-400 mb-2">0</div>
+            <div className="text-gray-400">Conversations</div>
+          </div>
+        </div>
       </div>
     </div>
   );

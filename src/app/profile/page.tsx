@@ -1,484 +1,236 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/components/AuthProvider';
-import { FadeIn, SlideUp, AnimatedButton, AnimatedCard } from '@/lib/animations';
-import { 
-  User, 
-  Mail, 
-  MapPin, 
-  Calendar, 
-  Code, 
-  Github, 
-  Linkedin, 
-  Globe, 
-  Edit, 
-  Save, 
-  X, 
-  Star, 
-  Eye, 
-  GitBranch, 
-  Users, 
-  Clock, 
-  Target,
-  Award,
-  TrendingUp,
-  MessageSquare,
-  Heart,
-  BookOpen,
-  Settings,
-  Bell,
-  Shield,
-  HelpCircle
-} from 'lucide-react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, Edit, Github, Globe, MapPin, User, Code, Star, Users, GitBranch } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    name: user?.fullName || '',
-    bio: user?.bio || 'Passionate developer looking for exciting projects to collaborate on.',
-    location: user?.location || 'Remote',
-    skills: user?.skills || ['JavaScript', 'React', 'Node.js', 'TypeScript'],
-    experienceLevel: user?.githubStats?.experienceLevel || 'Intermediate',
-    availability: 'Part-time', // Not in User interface, using default
-    github: user?.github || '',
-    linkedin: '', // Not in User interface, using empty string
-    website: user?.website || ''
-  });
 
-  const stats = {
-    projectsCompleted: 12,
-    collaborations: 8,
-    skills: 15,
-    experience: '3 years'
-  };
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-black text-white lg:ml-64 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Profile Not Found</h1>
+          <p className="text-gray-400 mb-6">Please sign in to view your profile.</p>
+          <Link href="/" className="text-blue-400 hover:text-blue-300">
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const recentProjects = [
-    {
-      id: 1,
-      title: 'E-commerce Platform',
-      description: 'Full-stack e-commerce solution with React and Node.js',
-      tech: ['React', 'Node.js', 'MongoDB'],
-      status: 'Completed',
-      collaborators: 3,
-      rating: 4.8
-    },
-    {
-      id: 2,
-      title: 'Task Management App',
-      description: 'Real-time task management with drag-and-drop interface',
-      tech: ['Vue.js', 'Firebase', 'TypeScript'],
-      status: 'In Progress',
-      collaborators: 2,
-      rating: 4.6
-    },
-    {
-      id: 3,
-      title: 'Weather Dashboard',
-      description: 'Weather app with beautiful UI and real-time data',
-      tech: ['React', 'OpenWeather API', 'Tailwind CSS'],
-      status: 'Completed',
-      collaborators: 1,
-      rating: 4.9
-    }
-  ];
-
-  const achievements = [
-    { icon: Award, title: 'Top Contributor', description: 'Most active developer this month' },
-    { icon: TrendingUp, title: 'Rising Star', description: 'Fastest growing profile' },
-    { icon: Star, title: '5-Star Rating', description: 'Consistently high ratings' }
-  ];
-
-  const handleSave = () => {
-    // In a real app, this would save to the backend
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditData({
-      name: user?.fullName || '',
-      bio: user?.bio || 'Passionate developer looking for exciting projects to collaborate on.',
-      location: user?.location || 'Remote',
-      skills: user?.skills || ['JavaScript', 'React', 'Node.js', 'TypeScript'],
-      experienceLevel: user?.githubStats?.experienceLevel || 'Intermediate',
-      availability: 'Part-time', // Not in User interface, using default
-      github: user?.github || '',
-      linkedin: '', // Not in User interface, using empty string
-      website: user?.website || ''
-    });
-    setIsEditing(false);
-  };
-
-  const addSkill = (skill: string) => {
-    if (skill && !editData.skills.includes(skill)) {
-      setEditData(prev => ({
-        ...prev,
-        skills: [...prev.skills, skill]
-      }));
-    }
-  };
-
-  const removeSkill = (skillToRemove: string) => {
-    setEditData(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
+  // Use optional chaining and provide defaults for missing properties
+  const profileData = {
+    fullName: user.fullName || user.name || 'Developer',
+    bio: user.bio || 'No bio available',
+    location: user.location || 'Location not set',
+    skills: user.skills || ['JavaScript', 'React', 'Node.js'],
+    githubStats: user.githubStats || { repos: 0, followers: 0, following: 0 },
+    github: user.github || { username: user.githubUsername || 'github', url: `https://github.com/${user.githubUsername || 'user'}` },
+    website: user.website || null
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-black text-white lg:ml-64">
+      <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Profile</h1>
-              <p className="text-gray-400 mt-2">Manage your developer profile and preferences</p>
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-lg transition-colors">
+            <ArrowLeft size={20} />
+            <span>Back to Buildrs</span>
+          </Link>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Edit size={16} />
+            {isEditing ? 'Cancel' : 'Edit Profile'}
+          </button>
+        </div>
+
+        {/* Profile Header */}
+        <div className="bg-black border border-gray-700 rounded-lg p-8 mb-8">
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* Avatar */}
+            <div className="flex-shrink-0">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-700">
+                {user.image ? (
+                  <img src={user.image} alt={profileData.fullName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-400">
+                    {profileData.fullName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              {!isEditing ? (
-                <AnimatedButton
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <Edit size={16} />
-                  Edit Profile
-                </AnimatedButton>
-              ) : (
-                <div className="flex gap-2">
-                  <AnimatedButton
-                    onClick={handleSave}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+
+            {/* Profile Info */}
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold mb-2">{profileData.fullName}</h1>
+              <p className="text-gray-400 mb-4">{profileData.bio}</p>
+              
+              <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+                {profileData.location && (
+                  <div className="flex items-center gap-1">
+                    <MapPin size={16} />
+                    <span>{profileData.location}</span>
+                  </div>
+                )}
+                {profileData.github && (
+                  <a
+                    href={profileData.github.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    <Save size={16} />
-                    Save
-                  </AnimatedButton>
-                  <AnimatedButton
-                    onClick={handleCancel}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                    <Github size={16} />
+                    <span>@{profileData.github.username}</span>
+                  </a>
+                )}
+                {profileData.website && (
+                  <a
+                    href={profileData.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    <X size={16} />
-                    Cancel
-                  </AnimatedButton>
-                </div>
-              )}
+                    <Globe size={16} />
+                    <span>Website</span>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Profile Section */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Profile Card */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <div className="flex items-start gap-6">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <User size={32} className="text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editData.name}
-                        onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
-                        className="text-2xl font-bold bg-gray-800 border border-gray-600 rounded px-3 py-1 text-white"
-                      />
-                    ) : (
-                      <h2 className="text-2xl font-bold">{editData.name}</h2>
-                    )}
-                    <span className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">
-                      {editData.experienceLevel}
-                    </span>
-                  </div>
-                  
-                  {isEditing ? (
-                    <textarea
-                      value={editData.bio}
-                      onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
-                      className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white mb-4"
-                      rows={3}
-                    />
-                  ) : (
-                    <p className="text-gray-300 mb-4">{editData.bio}</p>
-                  )}
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* About */}
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h2 className="text-xl font-bold mb-4">About</h2>
+              <p className="text-gray-300 leading-relaxed">{profileData.bio}</p>
+            </div>
 
-                  <div className="flex items-center gap-6 text-sm text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} />
-                      <span>{editData.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} />
-                      <span>{editData.availability}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} />
-                      <span>Joined 2023</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </AnimatedCard>
-
-            {/* Skills Section */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  <Code size={20} />
-                  Skills & Technologies
-                </h3>
-                {isEditing && (
-                  <input
-                    type="text"
-                    placeholder="Add a skill..."
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        addSkill((e.target as HTMLInputElement).value);
-                        (e.target as HTMLInputElement).value = '';
-                      }
-                    }}
-                    className="bg-gray-800 border border-gray-600 rounded px-3 py-1 text-white text-sm"
-                  />
-                )}
-              </div>
+            {/* Skills */}
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h2 className="text-xl font-bold mb-4">Skills</h2>
               <div className="flex flex-wrap gap-2">
-                {editData.skills.map((skill, index) => (
-                  <div
+                {profileData.skills.map((skill: string, index: number) => (
+                  <span
                     key={index}
-                    className="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-sm flex items-center gap-2"
+                    className="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-sm"
                   >
-                    <span>{skill}</span>
-                    {isEditing && (
-                      <button
-                        onClick={() => removeSkill(skill)}
-                        className="text-gray-500 hover:text-red-400"
-                      >
-                        <X size={12} />
-                      </button>
-                    )}
-                  </div>
+                    {skill}
+                  </span>
                 ))}
               </div>
-            </AnimatedCard>
+            </div>
 
-            {/* Recent Projects */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  <GitBranch size={20} />
-                  Recent Projects
-                </h3>
-                <Link
-                  href="/projects"
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium"
-                >
-                  View All
-                </Link>
-              </div>
+            {/* Recent Activity */}
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
               <div className="space-y-4">
-                {recentProjects.map((project, index) => (
-                  <SlideUp key={project.id} delay={index * 100}>
-                    <div className="border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-white">{project.title}</h4>
-                        <div className="flex items-center gap-2">
-                          <Star size={14} className="text-yellow-400" />
-                          <span className="text-sm text-gray-400">{project.rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-gray-400 text-sm mb-3">{project.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-wrap gap-1">
-                          {project.tech.map((tech, techIndex) => (
-                            <span
-                              key={techIndex}
-                              className="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                          <div className="flex items-center gap-1">
-                            <Users size={14} />
-                            <span>{project.collaborators}</span>
-                          </div>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            project.status === 'Completed' 
-                              ? 'bg-green-900 text-green-300' 
-                              : 'bg-yellow-900 text-yellow-300'
-                          }`}>
-                            {project.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </SlideUp>
-                ))}
+                <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <div>
+                    <p className="font-medium">Joined Buildrs</p>
+                    <p className="text-sm text-gray-400">Welcome to the community!</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <div>
+                    <p className="font-medium">Profile Created</p>
+                    <p className="text-sm text-gray-400">Your profile is now live</p>
+                  </div>
+                </div>
               </div>
-            </AnimatedCard>
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Stats */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Target size={20} />
-                Statistics
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Projects Completed</span>
-                  <span className="font-semibold text-white">{stats.projectsCompleted}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Collaborations</span>
-                  <span className="font-semibold text-white">{stats.collaborations}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Skills</span>
-                  <span className="font-semibold text-white">{stats.skills}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Experience</span>
-                  <span className="font-semibold text-white">{stats.experience}</span>
-                </div>
-              </div>
-            </AnimatedCard>
-
-            {/* Achievements */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Award size={20} />
-                Achievements
-              </h3>
+            {/* GitHub Stats */}
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">GitHub Stats</h3>
               <div className="space-y-3">
-                {achievements.map((achievement, index) => {
-                  const Icon = achievement.icon;
-                  return (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg">
-                      <Icon size={20} className="text-yellow-400" />
-                      <div>
-                        <h4 className="font-medium text-white">{achievement.title}</h4>
-                        <p className="text-sm text-gray-400">{achievement.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <GitBranch className="text-gray-400" size={16} />
+                    <span className="text-sm text-gray-400">Repositories</span>
+                  </div>
+                  <span className="font-semibold">{profileData.githubStats.repos}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="text-gray-400" size={16} />
+                    <span className="text-sm text-gray-400">Followers</span>
+                  </div>
+                  <span className="font-semibold">{profileData.githubStats.followers}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className="text-gray-400" size={16} />
+                    <span className="text-sm text-gray-400">Following</span>
+                  </div>
+                  <span className="font-semibold">{profileData.githubStats.following}</span>
+                </div>
               </div>
-            </AnimatedCard>
-
-            {/* Social Links */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Globe size={20} />
-                Social Links
-              </h3>
-              <div className="space-y-3">
-                {isEditing ? (
-                  <>
-                    <div className="flex items-center gap-3">
-                      <Github size={16} className="text-gray-400" />
-                      <input
-                        type="text"
-                        value={editData.github}
-                        onChange={(e) => setEditData(prev => ({ ...prev, github: e.target.value }))}
-                        placeholder="GitHub username"
-                        className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Linkedin size={16} className="text-gray-400" />
-                      <input
-                        type="text"
-                        value={editData.linkedin}
-                        onChange={(e) => setEditData(prev => ({ ...prev, linkedin: e.target.value }))}
-                        placeholder="LinkedIn profile"
-                        className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Globe size={16} className="text-gray-400" />
-                      <input
-                        type="text"
-                        value={editData.website}
-                        onChange={(e) => setEditData(prev => ({ ...prev, website: e.target.value }))}
-                        placeholder="Personal website"
-                        className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {editData.github && (
-                      <a
-                        href={`https://github.com/${editData.github}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
-                      >
-                        <Github size={16} />
-                        <span>@{editData.github}</span>
-                      </a>
-                    )}
-                    {editData.linkedin && (
-                      <a
-                        href={editData.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
-                      >
-                        <Linkedin size={16} />
-                        <span>LinkedIn Profile</span>
-                      </a>
-                    )}
-                    {editData.website && (
-                      <a
-                        href={editData.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
-                      >
-                        <Globe size={16} />
-                        <span>Personal Website</span>
-                      </a>
-                    )}
-                  </>
-                )}
-              </div>
-            </AnimatedCard>
+            </div>
 
             {/* Quick Actions */}
-            <AnimatedCard className="bg-gray-900 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-2">
-                <Link
-                  href="/swipe"
-                  className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  <Heart size={16} />
-                  <span>Discover Projects</span>
-                </Link>
-                <Link
-                  href="/matches"
-                  className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  <MessageSquare size={16} />
-                  <span>View Matches</span>
-                </Link>
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-3">
                 <Link
                   href="/projects/create"
-                  className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-center"
                 >
-                  <Code size={16} />
-                  <span>Create Project</span>
+                  Create Project
+                </Link>
+                <Link
+                  href="/forums/new"
+                  className="block w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-center"
+                >
+                  Start Discussion
+                </Link>
+                <Link
+                  href="/swipe"
+                  className="block w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-center"
+                >
+                  Find Matches
                 </Link>
               </div>
-            </AnimatedCard>
+            </div>
+
+            {/* Contact */}
+            <div className="bg-black border border-gray-700 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Contact</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-400">Email:</span>
+                  <span>{user.email}</span>
+                </div>
+                {profileData.github && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-400">GitHub:</span>
+                    <a
+                      href={profileData.github.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300"
+                    >
+                      @{profileData.github.username}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

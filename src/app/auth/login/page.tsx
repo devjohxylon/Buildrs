@@ -2,25 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Github, Mail } from 'lucide-react';
-import { useAuth } from '@/components/AuthProvider';
+import { ArrowLeft, Github } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { signIn } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGitHubLogin = async () => {
     setIsLoading(true);
-    setError(null);
-
     try {
-      await signIn(email, password);
-    } catch (err) {
-      setError('Invalid credentials');
+      await signIn('github', { callbackUrl: '/' });
+    } catch (error) {
+      console.error('GitHub login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -39,62 +32,28 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-black border border-gray-700 rounded-lg p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="text-red-400 text-sm">{error}</div>
-            )}
-
+          <div className="space-y-4">
             <button
-              type="submit"
+              onClick={handleGitHubLogin}
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
+              className="w-full bg-gray-800 hover:bg-gray-700 disabled:bg-gray-600 text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center gap-3"
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
-
-          <div className="mt-6 pt-6 border-t border-gray-700">
-            <button className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors flex items-center justify-center gap-2">
               <Github size={20} />
-              Continue with GitHub
+              {isLoading ? 'Signing in...' : 'Continue with GitHub'}
             </button>
-          </div>
 
-          <div className="mt-4 text-center">
-            <p className="text-gray-400 text-sm">
-              Don't have an account?{' '}
-              <Link href="/auth/register" className="text-blue-400 hover:text-blue-300">
-                Sign up
-              </Link>
-            </p>
+            <div className="text-center">
+              <p className="text-gray-400 text-sm">
+                By signing in, you agree to our{' '}
+                <Link href="/terms" className="text-blue-400 hover:text-blue-300">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-blue-400 hover:text-blue-300">
+                  Privacy Policy
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

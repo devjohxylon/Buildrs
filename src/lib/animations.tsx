@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 // Lightweight animation utilities to replace framer-motion for better performance
