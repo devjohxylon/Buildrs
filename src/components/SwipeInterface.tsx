@@ -1,192 +1,403 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import SwipeCard from './SwipeCard';
-import { Profile, Project, SwipeCard as SwipeCardType } from '@/types';
-import { 
-  RotateCcw,
-  Heart, 
-  X,
-  Settings
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Heart, X, Star, MessageSquare, User, Code, MapPin, Clock, Users, GitBranch, Eye, ThumbsUp } from 'lucide-react';
+import { SwipeCard, Profile, Project } from '@/types';
+import { FadeIn, SlideUp, AnimatePresence, AnimatedButton, AnimatedCard } from '@/lib/animations';
+import { debounce } from '@/lib/performance';
+import { useAuth } from './AuthProvider';
+import LoginModal from './LoginModal';
 
 interface SwipeInterfaceProps {
-  initialCards?: SwipeCardType[];
+  onSwipe?: (cardId: string, direction: 'left' | 'right') => void;
+  onMatch?: (card: SwipeCard) => void;
+  mode?: 'all' | 'profiles' | 'projects' | 'mixed';
 }
 
-export default function SwipeInterface({ initialCards = [] }: SwipeInterfaceProps) {
-  const [cards, setCards] = useState<SwipeCardType[]>(initialCards);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [lastDirection, setLastDirection] = useState<string>('');
-  const [matches, setMatches] = useState<SwipeCardType[]>([]);
-  const [rejected, setRejected] = useState<SwipeCardType[]>([]);
-  const childRefs = useRef(new Map<string, HTMLDivElement>());
+export default function SwipeInterface({ onSwipe, onMatch, mode = 'all' }: SwipeInterfaceProps) {
+  const { user, isAuthenticated } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [cards, setCards] = useState<SwipeCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [showMatch, setShowMatch] = useState(false);
+  const [matchedCard, setMatchedCard] = useState<SwipeCard | null>(null);
+  const [filter, setFilter] = useState<'all' | 'profiles' | 'projects'>(mode === 'mixed' ? 'all' : mode);
 
-  // Sample data for demo
-  const sampleCards: SwipeCardType[] = useMemo(() => [
-    {
-      id: '1',
-      type: 'profile',
-      data: {
-        id: '1',
-        name: 'Alex Chen',
-        role: 'Full Stack Developer',
-        location: 'San Francisco, CA',
-        experience: '3 years',
-        bio: 'Passionate about building scalable web applications and exploring new technologies. Currently interested in AI/ML integration.',
-        skills: ['React', 'Node.js', 'TypeScript', 'Python', 'PostgreSQL', 'AWS'],
-        interests: ['Web Apps', 'AI/ML', 'Startups'],
-        github: 'https://github.com/alexchen',
-        linkedin: 'https://linkedin.com/in/alexchen',
-        portfolio: 'https://alexchen.dev'
-      } as Profile
-    },
-    {
-      id: '2',
-      type: 'project',
-      data: {
-        id: '2',
-        title: 'EcoTracker',
-        category: 'Environmental',
-        description: 'A mobile app to track personal carbon footprint and suggest eco-friendly alternatives.',
-        techStack: ['React Native', 'Firebase', 'Node.js', 'Express'],
-        teamSize: '2-3',
-        timeline: '3 months',
-        lookingFor: ['Mobile Developer', 'UI/UX Designer'],
-        repository: 'https://github.com/ecotracker/app',
-        demo: 'https://ecotracker-demo.vercel.app'
-      } as Project
+  // Memoize filtered cards for performance
+  const filteredCards = useMemo(() => {
+    if (filter === 'all') return cards;
+    return cards.filter(card => card.type === filter.slice(0, -1)); // Remove 's' from 'profiles'/'projects'
+  }, [cards, filter]);
+
+  // Load cards with debounced loading
+  const loadCards = useCallback(
+    debounce(async () => {
+      setIsLoading(true);
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setCards([]); // Replace with actual API call to fetch cards
+      } catch (error) {
+        console.error('Failed to load cards:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 100),
+    []
+  );
+
+  useEffect(() => {
+    loadCards();
+  }, [loadCards]);
+
+  const handleSwipe = useCallback((direction: 'left' | 'right') => {
+    if (currentCardIndex >= filteredCards.length) return;
+
+    const currentCard = filteredCards[currentCardIndex];
+    setSwipeDirection(direction);
+
+    // Simulate match (20% chance)
+    if (direction === 'right' && Math.random() < 0.2) {
+      setMatchedCard(currentCard);
+      setShowMatch(true);
+      onMatch?.(currentCard);
     }
-  ], []);
 
-  // Use sample data if no initial cards provided
-  const displayCards = cards.length > 0 ? cards : sampleCards;
+    onSwipe?.(currentCard.id, direction);
 
-  const handleSwipe = (direction: 'left' | 'right', swipedCard: SwipeCardType) => {
-    setLastDirection(direction);
-    
-    if (direction === 'right') {
-      setMatches(prev => [...prev, swipedCard]);
-    } else {
-      setRejected(prev => [...prev, swipedCard]);
+    // Move to next card after animation
+    setTimeout(() => {
+      setCurrentCardIndex(prev => prev + 1);
+      setSwipeDirection(null);
+    }, 300);
+  }, [currentCardIndex, filteredCards, onSwipe, onMatch]);
+
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'ArrowLeft') {
+      handleSwipe('left');
+    } else if (event.key === 'ArrowRight') {
+      handleSwipe('right');
     }
-  };
+  }, [handleSwipe]);
 
-  const handleCardLeftScreen = (card: SwipeCardType) => {
-    const newCards = displayCards.filter(c => c.id !== card.id);
-    setCards(newCards);
-  };
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleKeyPress]);
 
-  const swipe = async (direction: 'left' | 'right') => {
-    if (currentIndex >= displayCards.length) return;
-    
-    const currentCard = displayCards[currentIndex];
-    const cardRef = childRefs.current.get(currentCard.id);
-    
-    if (cardRef) {
-      // Trigger swipe animation
-      handleSwipe(direction, currentCard);
-      setCurrentIndex(prev => prev + 1);
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
     }
-  };
+  }, [isAuthenticated]);
 
-  const undoSwipe = () => {
-    if (currentIndex === 0) return;
-    
-    const lastCard = displayCards[currentIndex - 1];
-    setCurrentIndex(prev => prev - 1);
-    
-    // Remove from matches/rejected
-    setMatches(prev => prev.filter(card => card.id !== lastCard.id));
-    setRejected(prev => prev.filter(card => card.id !== lastCard.id));
-  };
+  // If not authenticated, show login modal
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-6">
+            <div className="text-6xl mb-4">Login Required</div>
+            <h1 className="text-2xl font-bold mb-4">Join Buildrs to start swiping</h1>
+            <p className="text-gray-400 mb-6">
+              Connect with developers and discover amazing projects.
+            </p>
+            <AnimatedButton
+              onClick={() => setShowLoginModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
+            >
+              Get Started
+            </AnimatedButton>
+          </div>
+        </div>
+        <LoginModal 
+          isOpen={showLoginModal} 
+          onClose={() => setShowLoginModal(false)}
+          feature="swipe"
+        />
+      </>
+    );
+  }
 
-  const currentCard = displayCards[currentIndex];
-  const hasCards = currentIndex < displayCards.length;
+  const currentCard = filteredCards[currentCardIndex];
+  const progress = ((currentCardIndex + 1) / filteredCards.length) * 100;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading cards...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentCardIndex >= filteredCards.length) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">No Cards</div>
+          <h1 className="text-2xl font-bold mb-4">No profiles or projects available</h1>
+          <p className="text-gray-400 mb-6">
+            Check back later for new developers and projects to discover.
+          </p>
+          <AnimatedButton
+            onClick={() => {
+              setCurrentCardIndex(0);
+              loadCards();
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
+          >
+            Refresh
+          </AnimatedButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-gray-800">
-        <div className="max-w-md mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-xl font-bold">Buildrs</div>
-          <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-            <Settings size={20} />
-          </button>
+      <div className="bg-black border-b border-gray-700/50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Discover</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">
+                {currentCardIndex + 1} of {filteredCards.length}
+              </span>
+              <div className="w-32 bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex gap-1 bg-gray-900 rounded-lg p-1">
+            {[
+              { id: 'all', label: 'All', icon: Eye },
+              { id: 'profiles', label: 'Developers', icon: User },
+              { id: 'projects', label: 'Projects', icon: Code }
+            ].map(({ id, label, icon: Icon }) => (
+              <AnimatedButton
+                key={id}
+                onClick={() => setFilter(id as any)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                  filter === id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                }`}
+              >
+                <Icon size={16} />
+                <span>{label}</span>
+              </AnimatedButton>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="pt-20 pb-32 flex items-center justify-center min-h-screen">
-        <div className="relative w-96 h-[650px]">
-          {hasCards ? (
-            <AnimatePresence mode="wait">
-              <div key={currentCard.id} className="absolute inset-0">
-                <SwipeCard
-                  card={currentCard}
-                  onSwipe={handleSwipe}
-                  onCardLeftScreen={handleCardLeftScreen}
-                />
-              </div>
-            </AnimatePresence>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center justify-center h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700"
-            >
-              <div className="text-center p-8">
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-2xl font-bold mb-2">All caught up!</h2>
-                <p className="text-gray-400">Check back later for more profiles and projects.</p>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Card Display */}
+          <div className="lg:col-span-2">
+            {currentCard && (
+              <AnimatedCard
+                className={`bg-gray-900 border border-gray-700 rounded-xl p-6 transition-all duration-300 ${
+                  swipeDirection === 'left' ? 'transform -translate-x-full opacity-0' :
+                  swipeDirection === 'right' ? 'transform translate-x-full opacity-0' : ''
+                }`}
+              >
+                {currentCard && (
+                  <div className="space-y-6">
+                    {/* Card Header */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+                          {currentCard.type === 'profile' ? (
+                            <User size={24} className="text-gray-400" />
+                          ) : (
+                            <Code size={24} className="text-gray-400" />
+                          )}
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold">
+                            {currentCard.type === 'profile' 
+                              ? (currentCard.data as Profile).name
+                              : (currentCard.data as Project).title
+                            }
+                          </h2>
+                          <p className="text-gray-400">
+                            {currentCard.type === 'profile' 
+                              ? (currentCard.data as Profile).experienceLevel
+                              : (currentCard.data as Project).difficulty
+                            }
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star size={16} className="text-yellow-400" />
+                        <span className="text-sm text-gray-400">4.8</span>
+                      </div>
+                    </div>
 
-      {/* Action Buttons */}
-      <div className="fixed bottom-8 left-0 right-0">
-        <div className="max-w-md mx-auto px-6">
-          <div className="flex items-center justify-center gap-6">
-            <button
-              onClick={undoSwipe}
-              disabled={currentIndex === 0}
-              className="w-14 h-14 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:opacity-50 rounded-full flex items-center justify-center transition-colors"
-            >
-              <RotateCcw size={24} />
-            </button>
-            
-            <button
-              onClick={() => swipe('left')}
-              disabled={!hasCards}
-              className="w-16 h-16 bg-red-500 hover:bg-red-600 disabled:bg-gray-800 disabled:opacity-50 rounded-full flex items-center justify-center transition-colors"
-            >
-              <X size={28} />
-            </button>
-            
-            <button
-              onClick={() => swipe('right')}
-              disabled={!hasCards}
-              className="w-16 h-16 bg-green-500 hover:bg-green-600 disabled:bg-gray-800 disabled:opacity-50 rounded-full flex items-center justify-center transition-colors"
-            >
-              <Heart size={28} />
-            </button>
+                    {/* Card Content */}
+                    <div>
+                      <p className="text-gray-300 mb-4">
+                        {currentCard.type === 'profile' 
+                          ? (currentCard.data as Profile).bio
+                          : (currentCard.data as Project).description
+                        }
+                      </p>
+
+                      {/* Skills/Tech Stack */}
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium text-gray-400 mb-2">
+                          {currentCard.type === 'profile' ? 'Skills' : 'Tech Stack'}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {(currentCard.type === 'profile' 
+                            ? (currentCard.data as Profile).skills
+                            : (currentCard.data as Project).techStack
+                          ).slice(0, 5).map((skill, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-gray-800 text-xs rounded-full text-gray-300"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Additional Info */}
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <MapPin size={14} />
+                          <span>
+                            {currentCard.type === 'profile' 
+                              ? (currentCard.data as Profile).location || 'Remote'
+                              : 'Remote'
+                            }
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <Clock size={14} />
+                          <span>
+                            {currentCard.type === 'profile' 
+                              ? (currentCard.data as Profile).availability
+                              : (currentCard.data as Project).estimatedDuration
+                            }
+                          </span>
+                        </div>
+                        {currentCard.type === 'project' && (
+                          <>
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <Users size={14} />
+                              <span>
+                                {(currentCard.data as Project).currentCollaborators}/
+                                {(currentCard.data as Project).maxCollaborators} members
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <GitBranch size={14} />
+                              <span>{(currentCard.data as Project).status}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </AnimatedCard>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-4 space-y-4">
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <AnimatedButton
+                    onClick={() => handleSwipe('left')}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white p-4 rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <X size={20} />
+                    Pass
+                  </AnimatedButton>
+                  <AnimatedButton
+                    onClick={() => handleSwipe('right')}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <Heart size={20} />
+                    Like
+                  </AnimatedButton>
+                </div>
+              </div>
+
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4">Stats</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Cards Viewed</span>
+                    <span className="font-semibold">{currentCardIndex}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Matches</span>
+                    <span className="font-semibold text-green-400">0</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Remaining</span>
+                    <span className="font-semibold">{filteredCards.length - currentCardIndex - 1}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="fixed top-20 left-4 z-40">
-        <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-800">
-          <div className="text-xs text-gray-400 space-y-1">
-            <div>Matches: {matches.length}</div>
-            <div>Passed: {rejected.length}</div>
-            <div>Remaining: {Math.max(0, displayCards.length - currentIndex)}</div>
-          </div>
+      {/* Match Modal */}
+      {showMatch && matchedCard && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <FadeIn className="bg-gray-900 border border-gray-700 rounded-xl p-8 max-w-md w-full text-center">
+            <div className="text-6xl mb-4">Match!</div>
+            <h2 className="text-2xl font-bold mb-2">It's a Match!</h2>
+            <p className="text-gray-400 mb-6">
+              You and {matchedCard.type === 'profile' 
+                ? (matchedCard.data as Profile).name
+                : (matchedCard.data as Project).title
+              } are a great fit!
+            </p>
+            <div className="flex gap-3">
+              <AnimatedButton
+                onClick={() => setShowMatch(false)}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+              >
+                Continue Swiping
+              </AnimatedButton>
+              <AnimatedButton
+                onClick={() => {
+                  setShowMatch(false);
+                  // Navigate to chat or profile
+                }}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+              >
+                <MessageSquare size={16} />
+                Message
+              </AnimatedButton>
+            </div>
+          </FadeIn>
         </div>
-      </div>
+      )}
     </div>
   );
 } 

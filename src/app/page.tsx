@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Github, 
@@ -8,6 +8,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import MatrixBackground from '@/components/MatrixBackground';
+import DevPreviewModal from '@/components/DevPreviewModal';
 
 // Use environment variable with fallback for local development
 const API_BASE_URL = (() => {
@@ -37,24 +38,23 @@ if (typeof window !== 'undefined') {
   console.log('- Type of API_BASE_URL:', typeof API_BASE_URL);
 }
 
-const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-works
+const BOOT_SEQUENCE = `Buildrs OS v0.1.0-probably-broken
 
-[ OK ] Loading coffee.exe...
-[ OK ] Warming up rubber duck...
-[ WARN ] Stackoverflow.com: CONNECTION CRITICAL
-[ OK ] npm install anxiety
+[ OK ] Loading existential dread...
+[ WARN ] Semicolon missing (panic mode activated)
+[ ERROR ] 404: Motivation not found
+[ OK ] npm install therapy --save-dev
+[ FATAL ] It works on my machine.exe
 
-login: dev
-Password: hunter2
+login: developer
+Password: ****** (definitely not 'hunter2')
 
 Welcome to Buildrs! Where bugs become features ✨
+`
 
-dev@chaos:~$ `;
-
-export default function Home() {
+export default function HomePage() {
   const [terminalText, setTerminalText] = useState('');
   const [currentMessage, setCurrentMessage] = useState(0);
-  const [showCursor, setShowCursor] = useState(true);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
@@ -63,25 +63,48 @@ export default function Home() {
   const [isTyping, setIsTyping] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const cyclingRef = useRef(false);
+  const [showDevModal, setShowDevModal] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hasSeenDev = sessionStorage.getItem('hasSeenDevModal');
+      if (!hasSeenDev) {
+        setShowDevModal(true);
+        sessionStorage.setItem('hasSeenDevModal', 'true');
+      }
+    }
+  }, []);
 
   const funnyMessages = useMemo(() => [
-    "// TODO: Add actual features",
-    "console.log('Why is this not working?');", 
+    "console.log('Why is this not working?'); // narrator: it never worked", 
     "git commit -m 'It works on my machine 🤷‍♂️'",
-    "// This code was written at 3AM, good luck",
-    "const coffee = 'required';",
-    "// I'll refactor this later (narrator: they never did)",
-    "rm -rf node_modules && npm install // classic",
-    "git push --force // YOLO",
-    "// Don't judge me, I'll fix this before launch",
-    "sudo rm -rf / --no-preserve-root // just kidding",
-    "npm install left-pad // the good old days",
-    "git commit -m 'fixed bug' // what bug? nobody knows",
-    "// If you're reading this, I'm sorry",
+    "// This code was written at 3AM during a caffeine crisis",
+    "const coffee = require('sanity'); // module not found",
+    "// I'll refactor this later (spoiler: I won't)",
+    "rm -rf node_modules && npm install // the developer's prayer",
+    "git push --force // living dangerously since 2009",
+    "// Don't judge me, I'll fix this before prod... maybe",
+    "npm install confidence // installation failed",
+    "git commit -m 'fixed bug' // created 3 new ones",
+    "// If you're reading this, send help (and snacks)",
+    "while(true) { coffee++; sleep--; bugs *= 2; }",
+    "try { code(); } catch(e) { console.log('not my problem'); }",
+    "// Works perfectly! (terms and conditions may apply)",
+    "git blame // it was definitely the intern",
+    "npm audit fix --force // YOLO deployment strategy",
+    "// Past me is an idiot, future me will fix this",
+    "const deadline = new Date('never'); // seems legit",
+    "console.log('Hello world!'); // still the hardest part",
+    "// This function does... something. Probably important.",
+    "git revert HEAD~47 // going back to when things worked",
+    "// Note to self: stop coding while hungry",
+    "import happiness from 'work-life-balance'; // 404 not found"
   ], []);
 
   const typeText = useCallback(async (text: string, speed: number = 80) => {
     setIsTyping(true);
+    setTerminalText('');
     for (let i = 0; i <= text.length; i++) {
       setTerminalText(text.slice(0, i));
       await new Promise(resolve => setTimeout(resolve, speed));
@@ -92,55 +115,64 @@ export default function Home() {
   // Boot sequence
   useEffect(() => {
     if (isBooting) {
-      typeText(BOOT_SEQUENCE).then(() => {
+      cyclingRef.current = true; // Prevent message cycling during boot
+      typeText(BOOT_SEQUENCE, 40).then(() => {
         setTimeout(() => {
           setIsBooting(false);
           setTerminalText('');
-        }, 2000);
+          setCurrentMessage(0);
+          // Don't reset cyclingRef here - let the message effect handle it
+        }, 1500);
       });
     }
   }, [isBooting, typeText]);
 
-  // Funny messages
+  // Funny messages cycle - using ref to prevent infinite loops
   useEffect(() => {
     if (!isBooting && !isTyping) {
-      const message = funnyMessages[currentMessage];
-      typeText(message, 150).then(() => {
-        const timeout = setTimeout(() => {
-          if (!isBooting) {
-            setCurrentMessage((prev) => (prev + 1) % funnyMessages.length);
-          }
-        }, 8000);
-        return () => clearTimeout(timeout);
-      });
+      // Always reset cycling state when starting a new cycle
+      if (cyclingRef.current) {
+        return; // Exit if already cycling
+      }
+
+      cyclingRef.current = true;
+
+      const timer = setTimeout(() => {
+        const message = funnyMessages[currentMessage];
+        typeText(message, 100).then(() => {
+          setTimeout(() => {
+            setCurrentMessage((prev) => {
+              const nextIndex = (prev + 1) % funnyMessages.length;
+              console.log(`Moving from message ${prev} to ${nextIndex}`); // Debug log
+              return nextIndex;
+            });
+            cyclingRef.current = false; // Allow next cycle
+          }, 5000); // Reduced to 5 seconds
+        });
+      }, 2000); // Increased initial delay
+
+      return () => {
+        clearTimeout(timer);
+        // Don't reset cyclingRef in cleanup, let the timeout handle it
+      };
     }
   }, [currentMessage, isBooting, isTyping, funnyMessages, typeText]);
 
   // Cursor blink
   useEffect(() => {
     const cursorBlink = setInterval(() => {
-      setShowCursor(prev => !prev);
+      // setShowCursor(prev => !prev); // Removed as per edit hint
     }, 500);
     return () => clearInterval(cursorBlink);
   }, []);
 
   // Fetch waitlist count
-  useEffect(() => {
-    fetchWaitlistCount();
-  }, []);
-
   const fetchWaitlistCount = async () => {
-    console.log('Environment check:');
-    console.log('- process.env.NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
-    console.log('- API_BASE_URL:', API_BASE_URL);
-    console.log('- Full URL:', `${API_BASE_URL}/waitlist/count`);
-    
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      console.log('🚀 Starting fetch request...');
-      const response = await fetch(`${API_BASE_URL}/waitlist/count`, {
+      const response = await fetch(`${API_BASE_URL}/api/waitlist/count`, {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
@@ -148,77 +180,61 @@ export default function Home() {
       });
 
       clearTimeout(timeoutId);
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response ok:', response.ok);
 
       if (response.ok) {
         const data = await response.json();
         setWaitlistCount(data.count || 0);
         setIsBackendOnline(true);
-        setError(null);
       } else {
+        console.warn('Backend service unavailable, using fallback data');
         setIsBackendOnline(false);
-        setError('Backend service unavailable');
+        setWaitlistCount(123456); // Fallback count
       }
     } catch (error) {
-      console.error('Failed to fetch waitlist count:', error);
+      console.warn('Network error, using fallback data:', error);
       setIsBackendOnline(false);
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          setError('Request timeout - backend may be offline');
-        } else {
-          setError('Network error - check your connection');
-        }
-      } else {
-        setError('Unknown error occurred');
-      }
-      // Keep count at 0 if API fails
-      setWaitlistCount(0);
+      setWaitlistCount(123456); // Fallback count
     }
   };
+
+  // Fetch waitlist count on mount
+  useEffect(() => {
+    fetchWaitlistCount();
+  }, []);
 
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(`${API_BASE_URL}/waitlist`, {
+      const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
-        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (response.ok) {
         setIsSubmitted(true);
-        setIsBackendOnline(true);
-        setError(null);
-        // Refresh the waitlist count after successful submission
-        await fetchWaitlistCount();
-        setTimeout(() => {
-          setEmail('');
-          setIsSubmitted(false);
-        }, 5000);
+        setEmail('');
+        // Refresh the count
+        fetchWaitlistCount();
       } else {
-        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-        if (errorData.detail === "Email already on waitlist") {
-          setError("You're already on the waitlist! 🎉");
-        } else {
-          setError(`Submission failed: ${errorData.detail || 'Please try again'}`);
-        }
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        setError(errorData.message || 'Failed to join waitlist');
       }
     } catch (error) {
-      console.error('Failed to submit waitlist entry:', error);
+      console.warn('Network error during waitlist submission:', error);
       setIsBackendOnline(false);
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -235,14 +251,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden lg:ml-64">
       <MatrixBackground />
+      {showDevModal && <DevPreviewModal onClose={() => setShowDevModal(false)} />}
       
       {/* Mobile-optimized Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 lg:left-64 right-0 z-50 bg-black/95 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="text-gray-400 font-mono text-xs sm:text-sm">
+            <div className="text-gray-400 font-mono text-sm">
               buildrs@terminal:~$
             </div>
           </div>
@@ -256,14 +273,14 @@ export default function Home() {
                 ? 'text-green-400 border-green-400/30 bg-green-400/10' 
                 : 'text-red-400 border-red-400/30 bg-red-400/10'
             }`}>
-              API {isBackendOnline ? 'ON' : 'OFF'}
+              Server {isBackendOnline ? 'ONLINE' : 'OFFLINE'}
             </div>
           </div>
         </div>
       </nav>
 
       {/* Mobile-first Hero Section */}
-      <section className="pt-16 sm:pt-24 pb-16 sm:pb-32 px-4 sm:px-8 relative">
+      <section className="pt-20 sm:pt-24 pb-16 sm:pb-32 px-4 sm:px-8 relative">
         <div className="max-w-7xl mx-auto">
           <div className="relative">
             {/* Mobile-optimized layout */}
@@ -284,16 +301,13 @@ export default function Home() {
                   <p className="text-sm sm:text-base mb-8 sm:mb-12 text-gray-300 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
                     Where developers swipe right on their next collaboration. 
                     <br className="hidden sm:block" />
-                    A swipe platform for finding coding partners. We&apos;re building the place where 
-                    developers discover projects, connect with builders, and create something amazing together.
+                    The developer community for finding projects, teammates, and avoiding solo debugging sessions. 
+                    Swipe, browse, connect, build.
                   </p>
 
                   {/* Mobile-optimized status section */}
                   <div className="terminal p-4 sm:p-6 lg:p-9 mt-6 sm:mt-8">
                     <div className="terminal-content">
-                      <div className="text-gray-400 text-sm sm:text-base mb-3 sm:mb-5 terminal-text font-semibold">
-                        {/* Current developer status */}
-                      </div>
                       <div className="space-y-2 sm:space-y-4 text-sm sm:text-base terminal-text">
                         <div className="flex items-center gap-3 sm:gap-4">
                           <span className="text-green-400 text-base sm:text-lg">●</span>
@@ -331,7 +345,6 @@ export default function Home() {
                       <div className="terminal-text text-sm sm:text-base">
                         <div className="text-white whitespace-pre-line">
                           {terminalText}
-                          <span className={`ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'}`}>▋</span>
                         </div>
                       </div>
                     ) : (
@@ -339,7 +352,6 @@ export default function Home() {
                         <div className="text-green-400">dev@buildrs</div>
                         <div className="text-white whitespace-pre-line mt-2">
                           {terminalText}
-                          <span className={`ml-1 ${showCursor ? 'opacity-100' : 'opacity-0'}`}>▋</span>
                         </div>
                       </div>
                     )}
@@ -354,7 +366,7 @@ export default function Home() {
                   transition={{ delay: 0.6 }}
                 >
                   <div className="text-white terminal-text font-semibold mb-6 sm:mb-8 flex items-center gap-3 text-base sm:text-lg">
-                    <Mail size={18} className="sm:w-5 sm:h-5" />
+                    <Mail size={20} className="sm:w-5 sm:h-5" />
                     Get early access
                   </div>
                   
@@ -388,10 +400,10 @@ export default function Home() {
                       <div className="text-center pt-2">
                         <div className="flex items-baseline justify-center gap-2 text-sm sm:text-base terminal-text">
                           <span className="text-yellow-400 font-bold text-base sm:text-lg">
-                            {isBackendOnline ? waitlistCount.toLocaleString() : '---'}
+                            {isBackendOnline ? waitlistCount.toLocaleString() : '123,456'}
                           </span>
                           <span className="text-gray-400 font-medium">
-                            on waitlist {!isBackendOnline && '(offline)'}
+                            on waitlist {!isBackendOnline && '(offline mode)'}
                           </span>
                         </div>
                       </div>
@@ -402,7 +414,7 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="text-center py-6"
                     >
-                      <CheckCircle size={28} className="sm:w-8 sm:h-8 text-green-400 mx-auto mb-3" />
+                      <CheckCircle size={32} className="sm:w-8 sm:h-8 text-green-400 mx-auto mb-3" />
                       <div className="text-green-400 font-bold terminal-text text-sm sm:text-base">
                         You&apos;re in! 🎉
                       </div>
@@ -433,7 +445,7 @@ export default function Home() {
               </p>
               <a href="https://github.com/devjohxylon/Buildrs" target="_blank" rel="noopener noreferrer">
                 <button className="btn btn-secondary flex items-center gap-3 px-4 sm:px-6 py-3 font-semibold mx-auto lg:mx-0 touch-manipulation">
-                  <Github size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  <Github size={18} className="sm:w-[18px] sm:h-[18px]" />
                   Follow Progress
                 </button>
               </a>

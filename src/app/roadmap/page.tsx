@@ -1,219 +1,248 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect, useCallback } from 'react';
+import { Terminal, CheckCircle, Clock, Star, Rocket, Zap, Code, Users, ArrowLeft } from 'lucide-react';
+
+const ROADMAP_SEQUENCE = `Buildrs Roadmap v0.1.0-alpha
+
+[ OK ] Loading roadmap data...
+[ OK ] Current status: ALPHA DEVELOPMENT
+[ OK ] Frontend: 90% | Backend: 20%
+[ INFO ] Next milestone: BETA LAUNCH
+
+Welcome to the Buildrs Development Roadmap!`
 
 export default function RoadmapPage() {
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-5xl mx-auto px-8 py-20">
-        {/* Header */}
-        <div className="text-center mb-20">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 text-lg terminal-text">
-            ← Back to Buildrs
-          </Link>
-          <h1 className="text-5xl font-bold terminal-text mt-8 mb-6">Roadmap</h1>
-          <p className="text-gray-300 text-xl">Building the future of developer collaboration</p>
-        </div>
+  const [terminalText, setTerminalText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
-        {/* Current Status */}
-        <div className="mb-24">
-          <div className="terminal p-12 text-center">
-            <h2 className="text-3xl font-bold mb-6">🚀 Currently in Alpha Development</h2>
-            <p className="text-gray-300 text-xl leading-relaxed max-w-4xl mx-auto">
-              We're building the core platform and gathering feedback from early users. Join our waitlist to get early access!
+  const typeText = useCallback(async (text: string, speed: number = 80) => {
+    setIsTyping(true);
+    setTerminalText('');
+    for (let i = 0; i <= text.length; i++) {
+      setTerminalText(text.slice(0, i));
+      await new Promise(resolve => setTimeout(resolve, speed));
+    }
+    setIsTyping(false);
+  }, []);
+
+  // Start typing animation on mount
+  useEffect(() => {
+    typeText(ROADMAP_SEQUENCE, 40);
+  }, [typeText]);
+
+  const phases = [
+    {
+      name: 'Q1 2025 - ALPHA',
+      status: 'IN PROGRESS',
+      progress: 90,
+      color: 'green',
+      features: [
+        { text: 'Landing page & brand identity', done: true },
+        { text: 'Terminal UI design system', done: true },
+        { text: 'Next.js frontend framework', done: true },
+        { text: 'Responsive design & animations', done: true },
+        { text: 'Navigation & routing', done: true },
+        { text: 'Docs & features pages', done: true },
+        { text: 'Authentication UI', done: true },
+        { text: 'Swipe interface UI', done: true },
+        { text: 'Community page', done: true },
+        { text: 'Performance optimizations', done: true },
+        { text: 'Mobile responsiveness', done: true },
+        { text: 'Backend API structure', done: false },
+        { text: 'GitHub OAuth integration', done: false },
+        { text: 'User authentication system', done: false }
+      ]
+    },
+    {
+      name: 'Q2 2025 - BETA',
+      status: 'PLANNED',
+      progress: 0,
+      color: 'blue',
+      features: [
+        { text: 'Real user authentication', done: false },
+        { text: 'User profiles & settings', done: false },
+        { text: 'Swipe functionality', done: false },
+        { text: 'Matching algorithm', done: false },
+        { text: 'Basic chat system', done: false },
+        { text: 'Project creation', done: false },
+        { text: 'GitHub integration', done: false }
+      ]
+    },
+    {
+      name: 'Q3 2025 - LAUNCH',
+      status: 'PLANNED',
+      progress: 0,
+      color: 'purple',
+      features: [
+        { text: 'Real-time messaging', done: false },
+        { text: 'Project collaboration tools', done: false },
+        { text: 'Developer forums', done: false },
+        { text: 'Mobile app (React Native)', done: false },
+        { text: 'Advanced matching', done: false }
+      ]
+    },
+    {
+      name: 'Q4 2025 - SCALE',
+      status: 'PLANNED',
+      progress: 0,
+      color: 'orange',
+      features: [
+        { text: 'Team management', done: false },
+        { text: 'Enterprise features', done: false },
+        { text: 'Advanced analytics', done: false },
+        { text: 'API marketplace', done: false }
+      ]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white lg:ml-64">
+      {/* Header */}
+      <div className="bg-black border-b border-gray-800">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-lg transition-colors mb-4">
+              <ArrowLeft size={20} />
+              <span>Back to Buildrs</span>
+            </Link>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Roadmap</h1>
+            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+              What we've built and what's coming next
             </p>
           </div>
         </div>
+      </div>
 
-        {/* Timeline */}
-        <div className="space-y-20">
-
-          {/* Q1 2025 */}
-          <div>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="text-4xl font-bold terminal-text">Q1 2025</div>
-              <div className="flex-1 h-1 bg-green-400"></div>
-              <div className="px-6 py-3 bg-green-400 text-black text-lg font-bold rounded">
-                IN PROGRESS
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-12">
-              
-              <div className="terminal p-10 border-green-500">
-                <h3 className="text-2xl font-bold mb-6 text-green-400">✅ Foundation Complete</h3>
-                <div className="space-y-4 text-lg text-gray-300">
-                  <p>✓ Landing page and brand</p>
-                  <p>✓ Terminal UI design</p>
-                  <p>✓ Next.js setup</p>
-                  <p>✓ Legal pages</p>
-                </div>
-              </div>
-
-              <div className="terminal p-10 border-yellow-500">
-                <h3 className="text-2xl font-bold mb-6 text-yellow-400">🚧 Core Platform</h3>
-                <div className="space-y-4 text-lg text-gray-300">
-                  <p>⚠ Swipe interface</p>
-                  <p>○ User profiles</p>
-                  <p>○ GitHub OAuth</p>
-                  <p>○ Real-time chat</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Q2 2025 */}
-          <div>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="text-4xl font-bold terminal-text">Q2 2025</div>
-              <div className="flex-1 h-1 bg-blue-400"></div>
-              <div className="px-6 py-3 bg-blue-400 text-black text-lg font-bold rounded">
-                BETA LAUNCH
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              
-              <div className="terminal p-8">
-                <h3 className="text-xl font-bold mb-4 text-blue-400">🧠 AI Matching</h3>
-                <div className="space-y-3 text-lg text-gray-300">
-                  <p>• Smart compatibility</p>
-                  <p>• Skill analysis</p>
-                  <p>• Project matching</p>
-                </div>
-              </div>
-
-              <div className="terminal p-8">
-                <h3 className="text-xl font-bold mb-4 text-green-400">🛠️ Collaboration</h3>
-                <div className="space-y-3 text-lg text-gray-300">
-                  <p>• Project boards</p>
-                  <p>• Git integration</p>
-                  <p>• File sharing</p>
-                </div>
-              </div>
-
-              <div className="terminal p-8">
-                <h3 className="text-xl font-bold mb-4 text-purple-400">💰 Pro Plans</h3>
-                <div className="space-y-3 text-lg text-gray-300">
-                  <p>• Stripe payments</p>
-                  <p>• Feature controls</p>
-                  <p>• Analytics</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Q3 2025 */}
-          <div>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="text-4xl font-bold terminal-text">Q3 2025</div>
-              <div className="flex-1 h-1 bg-purple-400"></div>
-              <div className="px-6 py-3 bg-purple-400 text-black text-lg font-bold rounded">
-                COMMUNITY
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              
-              <div className="terminal p-8">
-                <h3 className="text-xl font-bold mb-4 text-yellow-400">🌍 Community</h3>
-                <div className="space-y-3 text-lg text-gray-300">
-                  <p>• Developer forums</p>
-                  <p>• Knowledge sharing</p>
-                  <p>• Mentorship programs</p>
-                </div>
-              </div>
-
-              <div className="terminal p-8">
-                <h3 className="text-xl font-bold mb-4 text-blue-400">📱 Mobile Apps</h3>
-                <div className="space-y-3 text-lg text-gray-300">
-                  <p>• iOS application</p>
-                  <p>• Android application</p>
-                  <p>• Push notifications</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Q4 2025 */}
-          <div>
-            <div className="flex items-center gap-6 mb-12">
-              <div className="text-4xl font-bold terminal-text">Q4 2025</div>
-              <div className="flex-1 h-1 bg-yellow-400"></div>
-              <div className="px-6 py-3 bg-yellow-400 text-black text-lg font-bold rounded">
-                ENTERPRISE
-              </div>
-            </div>
-
-            <div className="terminal p-10">
-              <h3 className="text-2xl font-bold mb-6 text-center text-yellow-400">🏢 Team Features</h3>
-              <div className="grid md:grid-cols-3 gap-8 text-lg text-gray-300">
-                <div className="space-y-3">
-                  <p>• Team management</p>
-                  <p>• Organization profiles</p>
-                </div>
-                <div className="space-y-3">
-                  <p>• Advanced integrations</p>
-                  <p>• Custom dashboards</p>
-                </div>
-                <div className="space-y-3">
-                  <p>• Enterprise analytics</p>
-                  <p>• Dedicated support</p>
-                </div>
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {/* Animated Terminal */}
+        <div className="mb-12">
+          <div className="bg-black border-2 border-gray-600 rounded-lg p-6 font-mono text-sm sm:text-base h-40 sm:h-48 lg:h-56 overflow-hidden relative">
+            <div className="absolute top-4 left-4 text-gray-500 text-xs">● ● ●</div>
+            <div className="h-full overflow-y-auto pt-8">
+              <div className="text-white whitespace-pre-line break-words leading-relaxed">
+                {terminalText}
               </div>
             </div>
           </div>
-
         </div>
 
-        {/* Progress Stats */}
-        <div className="mt-24 mb-20">
-          <h2 className="text-4xl font-bold terminal-text text-center mb-16">Development Progress</h2>
+        {/* Current Status */}
+        <div className="mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 bg-black rounded-lg border border-green-500 text-center">
+              <Terminal className="text-3xl text-green-400 mx-auto mb-3" />
+              <div className="text-2xl font-bold text-green-400 mb-1">ALPHA</div>
+              <div className="text-gray-400 text-sm">Current Phase</div>
+            </div>
+            <div className="p-6 bg-black rounded-lg border border-blue-500 text-center">
+              <Users className="text-3xl text-blue-400 mx-auto mb-3" />
+              <div className="text-2xl font-bold text-blue-400 mb-1">90%</div>
+              <div className="text-gray-400 text-sm">Frontend Complete</div>
+            </div>
+            <div className="p-6 bg-black rounded-lg border border-purple-500 text-center">
+              <Rocket className="text-3xl text-purple-400 mx-auto mb-3" />
+              <div className="text-2xl font-bold text-purple-400 mb-1">Q2 2025</div>
+              <div className="text-gray-400 text-sm">Beta Launch</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Development Phases */}
+        <div className="mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">Development Phases</h2>
           
-          <div className="grid md:grid-cols-4 gap-8">
-            
-            <div className="terminal p-8 text-center">
-              <div className="text-4xl font-bold text-green-400 mb-4">85%</div>
-              <div className="text-gray-300 text-lg">Frontend</div>
-            </div>
+          <div className="space-y-8">
+            {phases.map((phase, index) => (
+              <div key={index} className="bg-black rounded-lg border border-gray-700 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full bg-${phase.color}-400`}></div>
+                    <h3 className="text-xl font-bold text-white">{phase.name}</h3>
+                  </div>
+                  <div className="text-sm text-gray-400">{phase.status}</div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-gray-400 mb-2">
+                    <span>Progress</span>
+                    <span>{phase.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className={`bg-${phase.color}-400 h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${phase.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {phase.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-center gap-3">
+                      {feature.done ? (
+                        <CheckCircle size={16} className="text-green-400" />
+                      ) : (
+                        <Clock size={16} className="text-gray-500" />
+                      )}
+                      <span className={`text-sm ${feature.done ? 'text-gray-300' : 'text-gray-500'}`}>
+                        {feature.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="terminal p-8 text-center">
-              <div className="text-4xl font-bold text-yellow-400 mb-4">15%</div>
-              <div className="text-gray-300 text-lg">Backend</div>
+        {/* What's Next */}
+        <div className="mb-12">
+          <div className="terminal p-6 sm:p-8 bg-black">
+            <h2 className="text-2xl font-bold mb-6 text-white">What's Next</h2>
+            <div className="space-y-4 text-gray-300">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-sm">Backend API development with FastAPI</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-sm">GitHub OAuth integration</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-sm">User authentication system</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-sm">Real swipe functionality</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-sm">Basic matching algorithm</span>
+              </div>
             </div>
-
-            <div className="terminal p-8 text-center">
-              <div className="text-4xl font-bold text-blue-400 mb-4">1,247</div>
-              <div className="text-gray-300 text-lg">Waitlist</div>
-            </div>
-
-            <div className="terminal p-8 text-center">
-              <div className="text-4xl font-bold text-purple-400 mb-4">Q2</div>
-              <div className="text-gray-300 text-lg">Beta Launch</div>
-            </div>
-
           </div>
         </div>
 
         {/* CTA */}
-        <div className="flex justify-center">
-          <div className="terminal p-12 max-w-3xl w-full">
-            <h2 className="text-3xl font-bold mb-6 text-center">Want to Help Shape the Future?</h2>
-            <p className="text-gray-300 mb-8 text-xl leading-relaxed text-center">
-              Join our waitlist to get early access and help us build the best developer collaboration platform.
+        <div className="text-center">
+          <div className="terminal p-6 sm:p-8 bg-black">
+            <h2 className="text-2xl font-bold mb-4">Ready to Join?</h2>
+            <p className="text-gray-300 mb-6 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+              Be part of the journey from alpha to launch.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <a href="/" className="btn btn-primary text-xl py-4 px-8 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
                 Join Waitlist
-              </a>
-              <a href="https://github.com/devjohxylon/Buildrs" target="_blank" rel="noopener noreferrer" className="btn btn-secondary text-xl py-4 px-8 w-full sm:w-auto">
-                Follow on GitHub
-              </a>
+              </Link>
+              <Link href="/docs" className="bg-gray-800 hover:bg-gray-700 text-white font-medium px-8 py-3 rounded-lg transition-colors w-full sm:w-auto text-center">
+                Read Docs
+              </Link>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

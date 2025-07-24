@@ -66,6 +66,7 @@ export type ProjectType =
   | 'startup' 
   | 'hackathon' 
   | 'learning' 
+  | 'vr-ar'
   | 'other';
 
 export interface Match {
@@ -140,6 +141,121 @@ export interface SwipeDirection {
   direction: 'left' | 'right' | 'up' | 'down';
   velocity: number;
   rotation: number;
+}
+
+// Public Project Board Types
+export interface PublicProject {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  techStack: string[];
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  teamSize: string;
+  timeline: string;
+  lookingFor: string[];
+  repository?: string;
+  demo?: string;
+  website?: string;
+  createdBy: {
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'Open' | 'In Progress' | 'Completed' | 'Paused';
+  tags: string[];
+  collaborators: string[];
+  applications: number;
+  likes: number;
+  views: number;
+}
+
+export interface ProjectFilter {
+  category?: string;
+  techStack?: string[];
+  difficulty?: string;
+  status?: string;
+  tags?: string[];
+  search?: string;
+}
+
+// Forum Types
+export interface ForumCategory {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  threadCount: number;
+  latestPost?: {
+    id: string;
+    title: string;
+    author: string;
+    timestamp: Date;
+  };
+}
+
+export interface ForumThread {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  author: {
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    reputation: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  replies: number;
+  views: number;
+  likes: number;
+  isPinned: boolean;
+  isLocked: boolean;
+  isSolved: boolean;
+  tags: string[];
+  lastReply?: {
+    author: string;
+    timestamp: Date;
+  };
+}
+
+export interface ForumPost {
+  id: string;
+  threadId: string;
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    reputation: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  likes: number;
+  isAcceptedAnswer: boolean;
+  replies: ForumReply[];
+}
+
+export interface ForumReply {
+  id: string;
+  postId: string;
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    role: string;
+    avatar?: string;
+    reputation: number;
+  };
+  createdAt: Date;
+  likes: number;
 }
 
 // API Response types

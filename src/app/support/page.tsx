@@ -59,12 +59,12 @@ export default function SupportPage() {
             </div>
 
             <div className="terminal p-10">
-              <h3 className="text-2xl font-bold mb-6 text-purple-400">💬 Community Discord</h3>
+              <h3 className="text-2xl font-bold mb-6 text-purple-400">💬 Community</h3>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                Join our Discord server to chat with other developers and get quick help.
+                Connect with other developers and get help through our platform.
               </p>
-              <a href="/discord" className="btn btn-secondary text-lg py-4 px-8">
-                Join Discord
+              <a href="/community" className="btn btn-secondary text-lg py-4 px-8">
+                Join Community
               </a>
             </div>
 

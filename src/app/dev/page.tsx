@@ -48,7 +48,7 @@ export default function DevPreviewPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Users size={20} className="text-green-400" />
-                    <span className="text-gray-200 terminal-text font-medium">Profile and project mock data</span>
+                    <span className="text-gray-200 terminal-text font-medium">Profile and project data</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Zap size={20} className="text-yellow-400" />
@@ -87,7 +87,7 @@ export default function DevPreviewPage() {
                   </Link>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-800">
+                <div className="mt-8 pt-6">
                   <p className="text-gray-400 text-sm terminal-text mb-4">
                     Want to contribute or follow development?
                   </p>

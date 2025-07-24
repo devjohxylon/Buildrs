@@ -1,162 +1,278 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import SwipeInterface from '@/components/SwipeInterface';
-import { Users, Briefcase, Shuffle, Terminal, Code } from 'lucide-react';
+import { 
+  Heart, 
+  Users, 
+  Terminal, 
+  ArrowRight,
+  Code
+} from 'lucide-react';
+
+const funnyCommands = [
+  { cmd: 'scan_developers --quality=high', response: 'Found 3 developers who actually comment their code!' },
+  { cmd: 'check_commit_messages', response: 'Warning: 47 developers detected using "fix bug" commits' },
+  { cmd: 'git_rebase --knowledge', response: 'ERROR: Too many "it works on my machine" responses' },
+  { cmd: 'find_documentation_readers', response: 'Found developer who actually reads documentation!' },
+  { cmd: 'scan_unit_tests', response: 'Alert: Someone actually wrote unit tests!' },
+  { cmd: 'check_stack_overflow_dependency', response: 'ERROR: Stack Overflow dependency too high' },
+  { cmd: 'scan_variable_names', response: 'Found developer who uses proper variable names!' },
+  { cmd: 'check_css_knowledge', response: 'Scanning for developers who know CSS without frameworks...' },
+  { cmd: 'npm_audit --addiction', response: 'Warning: "npm install" addiction detected' },
+  { cmd: 'find_code_explainers', response: 'Found developer who can explain their code!' },
+  { cmd: 'check_friday_commits', response: 'Loading developers who don\'t commit on Fridays...' },
+  { cmd: 'scan_quick_fixes', response: 'ERROR: Too many "quick fix" commits detected' },
+  { cmd: 'typescript_audit', response: 'Found developer who actually uses TypeScript properly!' },
+  { cmd: 'scan_readme_files', response: 'Scanning for developers who write README files...' },
+  { cmd: 'check_api_documentation', response: 'Found 2 developers who document their APIs!' },
+  { cmd: 'scan_todo_comments', response: 'Loading developers who don\'t use "TODO: fix later"...' },
+  { cmd: 'check_works_for_me', response: 'ERROR: "Works for me" responses at critical levels' }
+];
+
+const BOOT_SEQUENCE = `Developer Discovery Terminal v1.0
+
+[ OK ] Loading "hot developers in your area"...
+[ WARN ] Connecting to GitHub API (looking for matches)...
+[ ERROR ] Verifying commit history (no red flags please)...
+[ OK ] Establishing secure chat channels...
+[ FATAL ] System ready! Swipe right for collaboration...
+
+login: developer
+Password: ****** (definitely not 'password123')
+`;
+
+const funnyMessages = [
+  '> Scanning for developers who actually comment their code...',
+  '> Found 3 developers who use meaningful commit messages!',
+  '> Warning: 47 developers detected using "fix bug" commits',
+  '> Loading developers who know what "git rebase" means...',
+  '> ERROR: Too many "it works on my machine" responses',
+  '> Found developer who actually reads documentation!',
+  '> Alert: Someone actually wrote unit tests!',
+  '> Loading developers who don\'t copy-paste from Stack Overflow...',
+  '> ERROR: Stack Overflow dependency too high',
+  '> Found developer who uses proper variable names!',
+  '> Scanning for developers who know CSS without frameworks...',
+  '> Warning: "npm install" addiction detected',
+  '> Found developer who can explain their code!',
+  '> Loading developers who don\'t commit on Fridays...',
+  '> ERROR: Too many "quick fix" commits detected',
+  '> Found developer who actually uses TypeScript properly!',
+  '> Scanning for developers who write README files...',
+  '> Found 2 developers who document their APIs!',
+  '> Loading developers who don\'t use "TODO: fix later"...',
+  '> ERROR: "Works for me" responses at critical levels'
+];
 
 export default function SwipePage() {
-  const [mode, setMode] = useState<'profiles' | 'projects' | 'mixed'>('mixed');
-  const [showInterface, setShowInterface] = useState(false);
+  const [terminalText, setTerminalText] = useState('');
+  const [currentMessage, setCurrentMessage] = useState(0);
+  const [isBooting, setIsBooting] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+  const [lastTypedMessage, setLastTypedMessage] = useState<number>(-1);
 
-  const modes = [
-    {
-      key: 'profiles' as const,
-      title: 'Find Developers',
-      description: 'Connect with talented developers looking for projects',
-      icon: Users,
-      command: 'grep -r "talent" /dev/developers'
-    },
-    {
-      key: 'projects' as const,
-      title: 'Find Projects',
-      description: 'Discover exciting projects that need your skills',
-      icon: Briefcase,
-      command: 'find /var/projects -name "*.opportunity"'
-    },
-    {
-      key: 'mixed' as const,
-      title: 'Mixed Mode',
-      description: 'See both developers and projects in your feed',
-      icon: Shuffle,
-      command: 'cat /dev/random | grep -E "(dev|project)"'
+  const typeText = useCallback(async (text: string, speed: number = 80) => {
+    setIsTyping(true);
+    setTerminalText('');
+    for (let i = 0; i <= text.length; i++) {
+      setTerminalText(text.slice(0, i));
+      await new Promise(resolve => setTimeout(resolve, speed));
     }
-  ];
+    setIsTyping(false);
+  }, []);
 
-  if (showInterface) {
-    return <SwipeInterface mode={mode} />;
-  }
+  // Boot sequence
+  useEffect(() => {
+    if (isBooting) {
+      typeText(BOOT_SEQUENCE, 40).then(() => {
+        setTimeout(() => {
+          setIsBooting(false);
+          setTerminalText('');
+          setCurrentMessage(0);
+        }, 1500);
+      });
+    }
+  }, [isBooting, typeText]);
+
+  // Boot sequence
+  useEffect(() => {
+    if (isBooting) {
+      typeText(BOOT_SEQUENCE, 40).then(() => {
+        setTimeout(() => {
+          setIsBooting(false);
+          setTerminalText('');
+          setCurrentMessage(0);
+        }, 1500);
+      });
+    }
+  }, [isBooting, typeText]);
+
+  // Funny messages cycle
+  useEffect(() => {
+    if (!isBooting && !isTyping && lastTypedMessage !== currentMessage) {
+      const timer = setTimeout(() => {
+        const message = funnyMessages[currentMessage];
+        setLastTypedMessage(currentMessage);
+        typeText(message, 100).then(() => {
+          setTimeout(() => {
+            setCurrentMessage((prev) => {
+              const nextIndex = (prev + 1) % funnyMessages.length;
+              return nextIndex;
+            });
+          }, 5000);
+        });
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [currentMessage, isBooting, isTyping, funnyMessages, typeText, lastTypedMessage]);
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-black text-white lg:ml-64">
       {/* Header */}
-      <div className="border-b border-gray-800 p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="terminal mb-4">
-            <div className="terminal-content">
-              <div className="text-gray-400 terminal-text text-sm mb-2">
-                user@buildrs:~$ ./configure_matching_engine.sh
-              </div>
-              <div className="text-green-500 text-sm">
-                [INFO] Matching engine ready for configuration
-              </div>
-            </div>
-          </div>
-          
-          <h1 className="text-3xl font-bold title-text mb-2">
-            CONFIGURE MATCHING ALGORITHM
-          </h1>
-          <p className="text-gray-400 terminal-text">
-            Select your matching parameters to initialize the collaboration discovery system.
-          </p>
-        </div>
-      </div>
-
-      {/* Mode Selection */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-2xl w-full">
-          <div className="space-y-4">
-            {modes.map((modeOption) => {
-              const Icon = modeOption.icon;
-              const isSelected = mode === modeOption.key;
-
-              return (
-                <motion.button
-                  key={modeOption.key}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={() => setMode(modeOption.key)}
-                  className={`w-full text-left transition-all ${
-                    isSelected ? 'border-white' : 'border-gray-700 hover:border-gray-500'
-                  } card`}
-                >
-                  <div className="card-header">
-                    <div className="flex items-center gap-2">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                        <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      </div>
-                      <span className="terminal-text text-xs">
-                        {modeOption.command}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="card-content">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 border rounded flex items-center justify-center ${
-                        isSelected ? 'border-white bg-white text-black' : 'border-gray-600'
-                      }`}>
-                        <Icon size={20} />
-                      </div>
-                      
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold title-text mb-1">
-                          {modeOption.title}
-                        </h3>
-                        <p className="text-gray-400 text-sm">
-                          {modeOption.description}
-                        </p>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          isSelected ? 'border-white' : 'border-gray-600'
-                        }`}>
-                          {isSelected && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
-
-          {/* Initialize Button */}
-          <div className="mt-8 text-center">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowInterface(true)}
-              className="btn btn-primary flex items-center gap-3 mx-auto px-8 py-4 text-lg"
+      <div className="bg-black">
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <motion.h1 
+              className="text-4xl sm:text-5xl font-bold mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              <Terminal size={20} />
-              INITIALIZE MATCHING ENGINE
-              <Code size={20} />
-            </motion.button>
-            
-            <div className="mt-4 text-gray-500 terminal-text text-sm">
-              Press ENTER to start discovering collaborators
-            </div>
-          </div>
+              Developer Discovery
+            </motion.h1>
+            <motion.p 
+              className="text-gray-400 text-lg mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              Find amazing developers to collaborate with
+            </motion.p>
+          </motion.div>
         </div>
       </div>
 
-      {/* Footer Status */}
-      <div className="border-t border-gray-800 p-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between terminal-text text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <div className="status-dot status-online"></div>
-            SYSTEM STATUS: OPERATIONAL
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        {/* Animated Terminal */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-black rounded-lg border border-gray-700 overflow-hidden mb-8"
+        >
+          {/* Terminal Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-black border-b border-gray-700">
+            <div className="flex items-center gap-2">
+              <Terminal size={14} className="text-white" />
+              <span className="text-white font-medium text-sm">Developer Discovery Terminal</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            </div>
           </div>
-          <div>
-            MODE: {mode.toUpperCase()}
+
+          {/* Animated Terminal Content */}
+          <div className="p-4 font-mono text-xs">
+            <div className="text-white min-h-[300px] max-h-[300px] overflow-y-auto">
+              <pre className="whitespace-pre-line text-white">
+                {terminalText}
+              </pre>
+              {!isBooting && (
+                <div className="mt-2">
+                  <div className="text-gray-500">user@buildrs:~/discovery$</div>
+                  <div className="text-gray-400 ml-2">start_swipe --mode=profiles</div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Simple Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="text-center mb-12"
+        >
+          <div className="bg-black rounded-lg border border-gray-700 p-8 mb-8">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="p-4 bg-red-400/10 rounded-full">
+                <Heart size={32} className="text-red-400" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">Find Your Perfect Match</h2>
+                <p className="text-gray-400">Connect with developers who share your vision</p>
+              </div>
+            </div>
+            
+            <Link href="/swipe/interface">
+              <button className="bg-gray-900 hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg border border-gray-700 transition-colors text-lg">
+                Start Swiping
+              </button>
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Terminal Window */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className="bg-black rounded-lg border border-gray-700 overflow-hidden mb-8"
+        >
+          {/* Terminal Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-black border-b border-gray-700">
+            <div className="flex items-center gap-2">
+              <Terminal size={14} className="text-white" />
+              <span className="text-white font-medium text-sm">System Features</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Terminal Content */}
+          <div className="p-4 font-mono text-xs space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-400 rounded-full" />
+              <span className="text-green-400 font-medium">Smart Matching:</span>
+              <span className="text-white">AI-powered developer recommendations</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full" />
+              <span className="text-blue-400 font-medium">Profile Verification:</span>
+              <span className="text-white">Verified skills and experience</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full" />
+              <span className="text-yellow-400 font-medium">Real-time Chat:</span>
+              <span className="text-white">Instant messaging with collaborators</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-purple-400 rounded-full" />
+              <span className="text-purple-400 font-medium">Skill Assessment:</span>
+              <span className="text-white">Technical skill verification</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

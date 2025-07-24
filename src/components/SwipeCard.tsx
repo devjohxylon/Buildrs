@@ -1,322 +1,209 @@
 'use client';
 
-import { useRef } from 'react';
-import TinderCard from 'react-tinder-card';
-import { motion } from 'framer-motion';
-import { Profile, Project, SwipeCard as SwipeCardType } from '@/types';
-import { 
-  MapPin, 
-  Clock, 
-  Users, 
-  Code, 
-  Briefcase, 
-  ExternalLink,
-  Github,
-  Linkedin,
-  Globe,
-  Terminal,
-  Zap,
-  Activity
-} from 'lucide-react';
+import React from 'react';
+import { Heart, X, Star, MessageSquare, User, Code, MapPin, Clock, Users, GitBranch, Eye, ThumbsUp } from 'lucide-react';
+import { SwipeCard as SwipeCardType } from '@/types';
+import { FadeIn, SlideUp } from '@/lib/animations';
 
 interface SwipeCardProps {
   card: SwipeCardType;
-  onSwipe: (direction: 'left' | 'right', card: SwipeCardType) => void;
+  onSwipe: (direction: 'left' | 'right') => void;
   onCardLeftScreen: (card: SwipeCardType) => void;
+  onClick: () => void;
 }
 
-export default function SwipeCard({ card, onSwipe, onCardLeftScreen }: SwipeCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
+export default function SwipeCard({ card, onSwipe, onCardLeftScreen, onClick }: SwipeCardProps) {
+  const cardRef = React.useRef<HTMLDivElement>(null);
 
   const handleSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
     if (direction === 'left' || direction === 'right') {
-      onSwipe(direction, card);
+      onSwipe(direction);
     }
   };
 
-  const handleCardLeftScreen = () => {
-    onCardLeftScreen(card);
-  };
+  const data = card.data as any; // Assuming data is now directly passed or derived
 
-  const isProfile = card.type === 'profile';
-  const data = card.data as Profile | Project;
-
-  const getRandomCodeSnippet = () => {
-    const snippets = [
-      "const buildCool = async () => {\n  return await collaboration();\n};",
-      "function findPartner() {\n  return devs.filter(dev => \n    dev.vibe === 'awesome'\n  );\n}",
-      "if (skills.match(yours)) {\n  lets.collaborate();\n}",
-      "const match = developers\n  .find(dev => dev.passion)\n  .code.together();"
-    ];
-    return snippets[Math.floor(Math.random() * snippets.length)];
-  };
-
-  if (isProfile) {
-    const profile = data as Profile;
-    return (
-      <TinderCard
-        ref={cardRef}
-        className="absolute inset-0"
-        onSwipe={handleSwipe}
-        onCardLeftScreen={handleCardLeftScreen}
-        preventSwipe={['up', 'down']}
-        swipeRequirementType="position"
-        swipeThreshold={200}
+  return (
+    <TinderCard
+      ref={cardRef}
+      className="absolute inset-0"
+      onSwipe={handleSwipe}
+      onCardLeftScreen={() => onCardLeftScreen(card)}
+      preventSwipe={['up', 'down']}
+      swipeRequirementType="position"
+      swipeThreshold={200}
+    >
+      <div
+        className="w-full h-full bg-black rounded-2xl border border-gray-700/50 cursor-grab active:cursor-grabbing overflow-hidden relative group hover:scale-[1.01] transition-transform duration-150"
+        onClick={onClick}
       >
-        <motion.div
-          className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 overflow-hidden cursor-grab active:cursor-grabbing"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          {/* Profile Header */}
-          <div className="p-8 border-b border-slate-700">
-            <div className="flex items-start gap-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white">
-                {profile.name.charAt(0)}
+        <ProfileCard profile={data} />
+
+        {/* Simplified "Tap for details" indicator */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10">
+          <Eye size={12} className="text-gray-300" />
+          <span className="text-xs text-gray-300 font-medium">Tap for details</span>
+          <ChevronRight size={12} className="text-gray-400" />
+        </div>
+      </div>
+    </TinderCard>
+  );
+}
+
+function ProfileCard({ profile }: { profile: any }) { // Assuming profile is now directly passed
+  const githubStats = profile.githubStats;
+  
+  return (
+    <div className="flex flex-col h-full p-6 relative z-10">
+      {/* Header - Fixed height */}
+      <div className="flex items-start gap-4 mb-4 h-20">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-cyan-500 rounded-xl flex items-center justify-center text-xl font-bold text-white shadow-lg flex-shrink-0">
+          {profile.name.charAt(0)}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <h3 className="text-xl font-bold text-white mb-1 truncate">{profile.name}</h3>
+          <div className="flex items-center gap-1 mb-2">
+            <Zap size={14} className="text-yellow-400 flex-shrink-0" />
+            <p className="text-blue-400 font-semibold text-sm truncate">{profile.role}</p>
+          </div>
+          <div className="flex items-center gap-3 text-gray-400 text-xs">
+            <div className="flex items-center gap-1">
+              <MapPin size={12} />
+              <span className="truncate">{profile.location}</span>
+            </div>
+            {githubStats && (
+              <div className="flex items-center gap-1">
+                <Github size={12} className="text-purple-400" />
+                <span className="text-purple-300">{githubStats.experienceLevel}</span>
               </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2">{profile.name}</h3>
-                <p className="text-blue-400 text-lg font-semibold mb-3">{profile.role}</p>
-                <div className="flex items-center gap-4 text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <MapPin size={16} />
-                    <span className="text-sm">{profile.location}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* GitHub Stats - New section */}
+      {githubStats && (
+        <div className="mb-4 h-16">
+          <div className="grid grid-cols-4 gap-2">
+            <div className="text-center">
+              <div className="text-blue-400 font-bold text-sm">{githubStats.publicRepos}</div>
+              <div className="text-gray-400 text-xs">Repos</div>
+            </div>
+            <div className="text-center">
+              <div className="text-yellow-400 font-bold text-sm">{githubStats.totalStars}</div>
+              <div className="text-gray-400 text-xs">Stars</div>
+            </div>
+            <div className="text-center">
+              <div className="text-green-400 font-bold text-sm">{githubStats.followers}</div>
+              <div className="text-gray-400 text-xs">Followers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-orange-400 font-bold text-sm">{githubStats.contributionStats.currentStreak}</div>
+              <div className="text-gray-400 text-xs">Streak</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bio - Fixed height with proper overflow */}
+      <div className="mb-4 h-12">
+        <p className="text-gray-300 leading-relaxed text-sm line-clamp-2">
+          {profile.bio}
+        </p>
+      </div>
+
+      {/* Top Languages - Enhanced */}
+      {githubStats && githubStats.topLanguages.length > 0 && (
+        <div className="mb-4 h-20">
+          <h4 className="text-white font-bold mb-2 flex items-center gap-2 text-sm">
+            <Code size={14} className="text-emerald-400" />
+            <span>Top Languages</span>
+          </h4>
+          <div className="space-y-1">
+            {githubStats.topLanguages.slice(0, 3).map((lang, index) => (
+              <div key={index} className="flex items-center justify-between text-xs">
+                <span className="text-gray-300">{lang.name}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-12 bg-gray-800 rounded-full h-1">
+                    <div 
+                      className="bg-blue-400 h-1 rounded-full" 
+                      style={{ width: `${Math.min(lang.percentage, 100)}%` }}
+                    ></div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={16} />
-                    <span className="text-sm">{profile.experience} exp</span>
-                  </div>
+                  <span className="text-gray-400 w-8 text-right">{lang.percentage}%</span>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+      )}
 
-          {/* Code snippet */}
-          <div className="p-6 bg-slate-950 border-b border-slate-700">
-            <div className="flex items-center gap-2 mb-3">
-              <Terminal size={16} className="text-green-400" />
-              <span className="text-green-400 text-sm font-mono">~/current-vibe.js</span>
-            </div>
-            <pre className="text-green-400 font-mono text-sm overflow-hidden">
-              <code>{getRandomCodeSnippet()}</code>
-            </pre>
+      {/* Skills - Fallback if no GitHub data */}
+      {(!githubStats || githubStats.topLanguages.length === 0) && (
+        <div className="mb-4 h-20">
+          <h4 className="text-white font-bold mb-3 flex items-center gap-2 text-sm">
+            <Code size={14} className="text-emerald-400" />
+            <span>Top Skills</span>
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {profile.skills.slice(0, 6).map((skill, index) => (
+              <span 
+                key={index} 
+                className="px-2 py-1 bg-black text-gray-200 rounded-lg text-xs font-medium border border-gray-600/50"
+              >
+                {skill}
+              </span>
+            ))}
+            {profile.skills.length > 6 && (
+              <span className="px-2 py-1 bg-purple-600/20 text-purple-300 rounded-lg text-xs font-medium border border-purple-500/30">
+                +{profile.skills.length - 6}
+              </span>
+            )}
           </div>
+        </div>
+      )}
 
-          {/* Skills */}
-          <div className="p-6 border-b border-slate-700">
-            <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <Code size={18} />
-              Tech Stack
+      {/* Activity & Interests - Takes remaining space */}
+      <div className="flex-1">
+        {githubStats && (
+          <div className="mb-3">
+            <h4 className="text-white font-bold mb-2 flex items-center gap-2 text-sm">
+              <Activity size={14} className="text-green-400" />
+              <span>Activity</span>
             </h4>
-            <div className="flex flex-wrap gap-2">
-              {profile.skills.slice(0, 8).map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-slate-800 text-gray-300 rounded-full text-sm border border-slate-600"
-                >
-                  {skill}
-                </span>
-              ))}
-              {profile.skills.length > 8 && (
-                <span className="px-3 py-1 bg-slate-700 text-gray-400 rounded-full text-sm">
-                  +{profile.skills.length - 8} more
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Bio */}
-          <div className="p-6 border-b border-slate-700">
-            <p className="text-gray-300 leading-relaxed">{profile.bio}</p>
-          </div>
-
-          {/* Interests & Goals */}
-          <div className="p-6 border-b border-slate-700">
-            <h4 className="text-white font-semibold mb-3">Looking to build</h4>
-            <div className="flex flex-wrap gap-2">
-              {profile.interests.map((interest, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm border border-blue-500/30"
-                >
-                  {interest}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Social Links */}
-          <div className="p-6">
-            <div className="flex items-center gap-4">
-              {profile.github && (
-                <a
-                  href={profile.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Github size={18} />
-                  <span className="text-sm">GitHub</span>
-                </a>
-              )}
-              {profile.linkedin && (
-                <a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Linkedin size={18} />
-                  <span className="text-sm">LinkedIn</span>
-                </a>
-              )}
-              {profile.portfolio && (
-                <a
-                  href={profile.portfolio}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Globe size={18} />
-                  <span className="text-sm">Portfolio</span>
-                </a>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </TinderCard>
-    );
-  } else {
-    // Project card
-    const project = data as Project;
-    return (
-      <TinderCard
-        ref={cardRef}
-        className="absolute inset-0"
-        onSwipe={handleSwipe}
-        onCardLeftScreen={handleCardLeftScreen}
-        preventSwipe={['up', 'down']}
-        swipeRequirementType="position"
-        swipeThreshold={200}
-      >
-        <motion.div
-          className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700 overflow-hidden cursor-grab active:cursor-grabbing"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          {/* Project Header */}
-          <div className="p-8 border-b border-slate-700">
-            <div className="flex items-start gap-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-2xl">
-                <Briefcase className="text-white" size={32} />
+            <div className="text-xs text-gray-400 space-y-1">
+              <div className="flex justify-between">
+                <span>Total contributions:</span>
+                <span className="text-green-400">{githubStats.contributionStats.totalContributions}</span>
               </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
-                <p className="text-green-400 text-lg font-semibold mb-3">{project.category}</p>
-                <div className="flex items-center gap-4 text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Users size={16} />
-                    <span className="text-sm">{project.teamSize} people needed</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={16} />
-                    <span className="text-sm">{project.timeline}</span>
-                  </div>
-                </div>
+              <div className="flex justify-between">
+                <span>Average per day:</span>
+                <span className="text-blue-400">{githubStats.contributionStats.averagePerDay}</span>
               </div>
             </div>
           </div>
-
-          {/* Code snippet for project */}
-          <div className="p-6 bg-slate-950 border-b border-slate-700">
-            <div className="flex items-center gap-2 mb-3">
-              <Terminal size={16} className="text-green-400" />
-              <span className="text-green-400 text-sm font-mono">~/project-idea.md</span>
-            </div>
-            <pre className="text-green-400 font-mono text-sm overflow-hidden">
-              <code>
-                {`const projectIdea = {\n  name: &quot;${project.title}&quot;,\n  status: &quot;seeking collaborators&quot;,\n  vibe: &quot;let's build something cool&quot;\n};`}
-              </code>
-            </pre>
+        )}
+        
+        <div>
+          <h4 className="text-white font-bold mb-2 flex items-center gap-2 text-sm">
+            <Star size={14} className="text-pink-400" />
+            <span>Interests</span>
+          </h4>
+          <div className="flex flex-wrap gap-1">
+            {profile.interests.slice(0, 4).map((interest, index) => (
+              <span 
+                key={index} 
+                className="px-2 py-1 bg-pink-500/20 text-pink-300 rounded-lg text-xs font-medium border border-pink-500/30"
+              >
+                {interest}
+              </span>
+            ))}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-          {/* Tech Stack */}
-          <div className="p-6 border-b border-slate-700">
-            <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <Code size={18} />
-              Tech Stack
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {project.techStack.slice(0, 8).map((tech, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-slate-800 text-gray-300 rounded-full text-sm border border-slate-600"
-                >
-                  {tech}
-                </span>
-              ))}
-              {project.techStack.length > 8 && (
-                <span className="px-3 py-1 bg-slate-700 text-gray-400 rounded-full text-sm">
-                  +{project.techStack.length - 8} more
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="p-6 border-b border-slate-700">
-            <p className="text-gray-300 leading-relaxed">{project.description}</p>
-          </div>
-
-          {/* Looking for */}
-          <div className="p-6 border-b border-slate-700">
-            <h4 className="text-white font-semibold mb-3">Looking for</h4>
-            <div className="flex flex-wrap gap-2">
-              {project.lookingFor.map((role, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/30"
-                >
-                  {role}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Project Links */}
-          <div className="p-6">
-            <div className="flex items-center gap-4">
-              {project.repository && (
-                <a
-                  href={project.repository}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Github size={18} />
-                  <span className="text-sm">Repository</span>
-                </a>
-              )}
-              {project.demo && (
-                <a
-                  href={project.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <ExternalLink size={18} />
-                  <span className="text-sm">Demo</span>
-                </a>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </TinderCard>
-    );
-  }
-} 
+ 

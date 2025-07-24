@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+/* Performance-optimized animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 300ms ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 300ms ease-out forwards;
+}
+
+.animate-scale {
+  animation: scale 200ms ease-out forwards;
+}
+
+.animate-stagger > * {
+  animation-delay: calc(var(--stagger-index, 0) * 50ms);
+}
+
 :root {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
@@ -16,12 +62,7 @@
   --warning: #ffff00;
 }
 
-@theme inline {
-  --color-background: var(--bg-primary);
-  --color-foreground: var(--text-primary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+
 
 * {
   box-sizing: border-box;
@@ -36,9 +77,13 @@ body {
   line-height: 1.6;
   font-size: 16px;
   font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Simple terminal scan line effect */
+/* Simple terminal scan line effect - disabled on mobile for performance */
+@media (min-width: 768px) {
 body::before {
   content: '';
   position: fixed;
@@ -57,6 +102,7 @@ body::before {
   pointer-events: none;
   z-index: 9999;
   animation: scan 0.15s linear infinite;
+  }
 }
 
 @keyframes scan {
@@ -98,199 +144,191 @@ body::before {
   content: "● ● ●";
   position: absolute;
   top: 16px;
-  left: 20px;
+  left: 16px;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 2px;
 }
 
 .terminal-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
   background: var(--bg-secondary);
-  border-bottom: 2px solid var(--border);
-  padding: 16px 24px;
-  font-size: 16px;
-  color: var(--text-secondary);
-  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
 }
 
 .terminal-content {
-  padding: 20px;
-  color: var(--text-primary);
-  font-size: 16px;
+  font-family: 'Courier New', monospace;
   line-height: 1.6;
-  font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* Cards */
 .card {
   background: var(--bg-card);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  overflow: hidden;
+  padding: 20px;
   transition: all 0.2s ease;
-  margin: 8px 0;
 }
 
 .card:hover {
-  border-color: var(--text-secondary);
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+  border-color: var(--border-light);
+  transform: translateY(-2px);
 }
 
 .card-header {
-  background: var(--bg-secondary);
-  border-bottom: 2px solid var(--border);
-  padding: 16px 24px;
-  font-size: 14px;
-  color: var(--text-secondary);
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
 
 .card-content {
-  padding: 24px;
+  color: var(--text-secondary);
 }
 
 /* Buttons */
 .btn {
-  background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text-primary);
-  padding: 16px 24px;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
   font-family: 'Courier New', monospace;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-  min-height: 56px;
+  min-height: 44px; /* Touch-friendly minimum height */
+  min-width: 44px; /* Touch-friendly minimum width */
 }
 
 .btn:hover {
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  border-color: var(--text-primary);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary {
-  border-color: var(--text-primary);
-  color: var(--text-primary);
-  font-weight: 700;
+  background: var(--accent);
+  color: var(--bg-primary);
 }
 
 .btn-secondary {
-  border-color: var(--text-secondary);
-  color: var(--text-secondary);
-  font-weight: 700;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-  background: var(--text-secondary);
-  color: var(--bg-primary);
+  background: var(--bg-card);
+  border-color: var(--border-light);
 }
 
 /* Action Buttons */
 .action-btn {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 3px solid var(--border);
-  background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: var(--text-primary);
-  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .action-btn:hover {
-  border-color: var(--text-primary);
-  background: var(--text-primary);
-  color: var(--bg-primary);
   transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .action-btn.reject {
-  border-color: var(--error);
-  color: var(--error);
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+  color: white;
 }
 
 .action-btn.reject:hover {
-  background: var(--error);
-  color: var(--bg-primary);
+  background: linear-gradient(135deg, #ff3742, #ff2f3a);
 }
 
 .action-btn.like {
-  border-color: var(--success);
-  color: var(--success);
+  background: linear-gradient(135deg, #2ed573, #1e90ff);
+  color: white;
 }
 
 .action-btn.like:hover {
-  background: var(--success);
-  color: var(--bg-primary);
+  background: linear-gradient(135deg, #1e90ff, #2ed573);
 }
 
 /* Tags */
 .tag {
-  background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text-secondary);
-  padding: 8px 16px;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   font-size: 12px;
-  font-family: 'Courier New', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: inline-block;
-  margin: 4px;
-  min-height: 36px;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 2px;
+  transition: all 0.2s ease;
 }
 
 .tag:hover {
-  border-color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border-light);
   color: var(--text-primary);
 }
 
-/* Code Block */
+/* Code Blocks */
 .code-block {
   background: var(--bg-secondary);
-  border: 2px solid var(--border);
-  border-radius: 4px;
-  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
   font-family: 'Courier New', monospace;
   font-size: 14px;
-  color: var(--text-primary);
+  line-height: 1.5;
+  color: var(--text-secondary);
   overflow-x: auto;
   position: relative;
-  margin: 16px 0;
-  font-weight: 500;
 }
 
 .code-block::before {
-  content: "// code";
+  content: "CODE";
   position: absolute;
-  top: -12px;
-  left: 12px;
-  background: var(--bg-primary);
+  top: 8px;
+  right: 12px;
+  font-size: 10px;
   color: var(--text-muted);
-  padding: 0 8px;
-  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 1px;
 }
 
 /* Status Indicators */
 .status-dot {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 12px;
+  margin-right: 8px;
 }
 
 .status-online {
@@ -307,44 +345,42 @@ body::before {
   50% { opacity: 0.5; }
 }
 
-/* Progress Bar */
+/* Progress Bars */
 .progress-bar {
   width: 100%;
-  height: 4px;
+  height: 6px;
   background: var(--bg-secondary);
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
   position: relative;
-  margin: 16px 0;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--text-primary);
+  background: linear-gradient(90deg, var(--accent), var(--success));
   transition: width 0.3s ease;
 }
 
-/* Loading */
+/* Loading Animation */
 .loading-dots::after {
-  content: '...';
-  animation: loading-dots 1.5s steps(4, end) infinite;
+  content: "...";
+  animation: loading-dots 1.5s infinite;
 }
 
 @keyframes loading-dots {
-  0%, 20% { content: '.'; }
-  40% { content: '..'; }
-  60% { content: '...'; }
-  80%, 100% { content: ''; }
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60%, 100% { content: "..."; }
 }
 
 /* Animations */
 .fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fade-in 0.3s ease-in;
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .slide-up {
@@ -359,12 +395,15 @@ body::before {
 /* Swipe Cards */
 .swipe-card {
   background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
   cursor: grab;
-  transition: transform 0.2s ease;
-  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 .swipe-card:active {
@@ -374,300 +413,150 @@ body::before {
 
 /* Matrix Background */
 .matrix-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
+  background: linear-gradient(45deg, var(--bg-primary) 25%, transparent 25%), 
+              linear-gradient(-45deg, var(--bg-primary) 25%, transparent 25%), 
+              linear-gradient(45deg, transparent 75%, var(--bg-primary) 75%), 
+              linear-gradient(-45deg, transparent 75%, var(--bg-primary) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
-/* Text Readability Classes */
+/* Text Readability */
 .text-readable {
   color: var(--text-primary);
-  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .text-readable-secondary {
   color: var(--text-secondary);
-  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .text-readable-muted {
   color: var(--text-muted);
-  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* Responsive */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
   .terminal {
     padding: 16px;
-    margin: 4px;
+    padding-top: 40px;
+    margin: 4px 0;
+    border-radius: 6px;
   }
   
   .card-content {
-    padding: 16px;
+    font-size: 14px;
   }
   
   .action-btn {
     width: 56px;
     height: 56px;
+    font-size: 20px;
   }
   
   .btn {
-    padding: 12px 20px;
+    padding: 10px 20px;
     font-size: 14px;
     min-height: 48px;
   }
   
   .terminal-text {
     font-size: 14px;
+    line-height: 1.5;
   }
   
   .title-text {
     font-size: 20px;
-  }
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
-}
-
-/* Focus States */
-*:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-input:focus,
-button:focus,
-a:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: var(--text-primary) !important;
-}
-
-.btn:focus,
-.action-btn:focus {
-  outline: 2px solid var(--text-primary);
-  outline-offset: 4px;
-}
-
-/* Selection */
-::selection {
-  background: var(--text-primary);
-  color: var(--bg-primary);
-}
-
-/* Responsive Mobile-First Optimizations */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-  
-  .terminal {
-    padding: 12px;
-    padding-top: 36px;
-    margin: 6px;
-    border-radius: 6px;
-  }
-  
-  .terminal::before {
-    top: 12px;
-    left: 16px;
-    font-size: 12px;
-  }
-  
-  .terminal-content {
-    padding: 16px;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  
-  .card-content {
-    padding: 16px;
-  }
-  
-  /* Mobile-optimized buttons */
-  .btn {
-    padding: 14px 20px;
-    font-size: 14px;
-    min-height: 48px;
-    border-radius: 6px;
-    /* Better touch targets */
-    min-width: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .action-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    /* Better touch experience */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Mobile typography */
-  .terminal-text {
-    font-size: 14px;
-    line-height: 1.5;
-    letter-spacing: 0.3px;
-  }
-  
-  .title-text {
-    font-size: 18px;
     letter-spacing: 0.5px;
-    line-height: 1.2;
   }
   
-  /* Mobile-specific spacing */
-  h1, h2, h3 {
-    margin-bottom: 1rem;
-  }
-  
-  p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-  }
-  
-  /* Improve form controls on mobile */
-  input[type="email"],
-  input[type="text"],
-  input[type="password"] {
-    font-size: 16px; /* Prevents zoom on iOS */
-    padding: 16px;
-    border-radius: 6px;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  
-  /* Mobile navigation */
-  nav {
-    padding: 0 16px;
-  }
-  
-  /* Better scrolling */
-  html {
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Prevent horizontal scroll */
-  body {
-    overflow-x: hidden;
-  }
-}
-
-/* Extra small mobile devices */
-@media (max-width: 480px) {
-  body {
-    font-size: 13px;
-  }
-  
-  .terminal {
-    padding: 10px;
-    padding-top: 32px;
-    margin: 4px;
-  }
-  
-  .terminal-content {
-    padding: 12px;
-    font-size: 13px;
-  }
-  
-  .btn {
-    padding: 12px 16px;
-    font-size: 13px;
+  /* Improved touch targets */
+  .btn, .action-btn, .tag {
     min-height: 44px;
+    min-width: 44px;
   }
   
-  .terminal-text {
-    font-size: 13px;
-  }
-  
-  .title-text {
-    font-size: 16px;
-  }
-  
-  /* Smaller spacing on very small screens */
+  /* Better spacing for mobile */
   .space-y-8 > * + * {
     margin-top: 1.5rem;
   }
   
   .space-y-6 > * + * {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
   }
   
   .space-y-4 > * + * {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  /* Optimize for mobile performance */
+  .swipe-card {
+    margin: 8px;
+    padding: 16px;
+  }
+
+  /* Disable hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .btn:hover,
+    .action-btn:hover,
+    .card:hover,
+    .tag:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn:active,
+    .action-btn:active {
+      transform: scale(0.98);
+    }
   }
 }
 
 /* High DPI displays */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .terminal-text,
-  .title-text {
+  .title-text,
+  .btn,
+  .tag {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Landscape mobile orientation */
+/* Landscape mobile optimization */
 @media (max-width: 768px) and (orientation: landscape) {
   .terminal {
-    padding: 8px;
-    padding-top: 28px;
+    padding: 12px;
+    padding-top: 32px;
   }
   
   .terminal-content {
-    padding: 12px;
+    font-size: 13px;
   }
   
-  /* Compact navigation in landscape */
   nav {
-    height: 48px;
+    padding: 8px 16px;
   }
   
-  /* Adjust section padding in landscape */
   section {
-    padding-top: 48px;
-    padding-bottom: 32px;
+    padding: 16px;
   }
 }
 
-/* Touch-specific improvements */
+/* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
-  /* Touch devices */
   .btn:hover {
-    transform: none; /* Remove hover transforms on touch */
+    transform: none;
   }
   
   .action-btn:hover {
     transform: none;
   }
   
-  /* Better active states for touch */
   .btn:active {
     transform: scale(0.98);
-    background: var(--text-primary);
-    color: var(--bg-primary);
   }
   
   .action-btn:active {
@@ -675,30 +564,27 @@ a:focus {
   }
 }
 
-/* Dark mode improvements for mobile */
+/* Dark mode preferences */
 @media (prefers-color-scheme: dark) {
-  /* Better contrast on mobile screens */
   .terminal {
-    border-color: #444444;
+    background: var(--bg-primary);
   }
   
   .terminal-text {
-    color: #f0f0f0;
+    color: var(--text-primary);
   }
   
   input {
-    background: #0a0a0a;
-    border-color: #444444;
-    color: #f0f0f0;
+    background: var(--bg-input);
+    color: var(--text-primary);
   }
   
   input:focus {
-    border-color: #ffffff;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
   }
 }
 
-/* Accessibility improvements */
+/* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -708,9 +594,8 @@ a:focus {
     transition-duration: 0.01ms !important;
   }
   
-  /* Disable matrix scan lines for motion sensitivity */
   body::before {
-    display: none;
+    animation: none;
   }
 }
 
@@ -718,64 +603,92 @@ a:focus {
 @media (prefers-contrast: high) {
   .terminal {
     border-width: 3px;
-    border-color: #ffffff;
   }
   
   .btn {
-    border-width: 3px;
+    border-width: 2px;
   }
   
   .terminal-text,
   .title-text {
-    color: #ffffff;
     font-weight: 700;
   }
 }
 
-/* Focus improvements for mobile */
+/* Focus management */
 .btn:focus-visible,
 .action-btn:focus-visible,
-input:focus-visible {
-  outline: 3px solid #ffffff;
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Prevent zoom on input focus (iOS Safari) */
-@supports (-webkit-touch-callout: none) {
+/* Form elements */
   input[type="email"],
+input[type="password"],
   input[type="text"],
-  input[type="password"],
-  select,
+input[type="url"],
   textarea {
-    font-size: 16px;
-  }
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 16px; /* Prevent zoom on iOS */
+  min-height: 44px; /* Touch-friendly */
 }
 
-/* Safe area handling for notched devices */
+/* Fixed navigation for mobile */
+.fixed-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+}
+
+/* Performance optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area insets for modern mobile devices */
 @supports (padding: max(0px)) {
   .fixed-nav {
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
-    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 
-/* Improve tap highlight */
-* {
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+/* Optimize for Apple Silicon */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .terminal,
+  .card,
+  .btn {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
 }
 
-/* Allow text selection for content areas */
-p, span, div.terminal-content, input, textarea {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+/* Print styles */
+@media print {
+  .terminal,
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .action-btn,
+  .btn {
+    display: none;
+  }
 }
