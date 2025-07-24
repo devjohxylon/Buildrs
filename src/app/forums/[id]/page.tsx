@@ -288,146 +288,128 @@ export default function ThreadPage({ params }: { params: Promise<{ id: string }>
           {/* </motion.div> */}
 
           {/* Replies */}
-          {/* <AnimatePresence> */}
-            {localPosts.map((post, index) => (
-              {/* <motion.div
-                key={post.id}
-                className="bg-black border border-gray-700 rounded-lg"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              > */}
-                <div className="p-6">
-                  <div className="flex items-start gap-6">
-                    {/* Author Info */}
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mb-2">
-                        {/* User size={18} className="text-gray-400" */}
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm font-medium text-white mb-1">{post.author.name}</div>
-                        <div className="text-xs text-gray-500">{post.author.role}</div>
-                        <div className="text-xs text-gray-600 mt-1">Rep: {post.author.reputation}</div>
-                      </div>
+          {localPosts.map((post, index) => (
+            <div key={post.id} className="bg-black border border-gray-700 rounded-lg p-6">
+              <div className="flex items-start gap-6">
+                {/* Author Info */}
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center mb-2">
+                    {/* User size={18} className="text-gray-400" */}
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-white mb-1">{post.author.name}</div>
+                    <div className="text-xs text-gray-500">{post.author.role}</div>
+                    <div className="text-xs text-gray-600 mt-1">Rep: {post.author.reputation}</div>
+                  </div>
+                </div>
+
+                {/* Post Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm text-gray-400">
+                      {formatDate(post.createdAt)}
                     </div>
+                    <div className="flex items-center gap-2">
+                      <button className="text-gray-400 hover:text-white p-1 rounded transition-colors">
+                        {/* MoreVertical size={16} */}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-gray-300 leading-relaxed whitespace-pre-wrap mb-4">
+                    {post.content}
+                  </div>
 
-                    {/* Post Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-sm text-gray-400">
-                          {formatDate(post.createdAt)}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="text-gray-400 hover:text-white p-1 rounded transition-colors">
-                            {/* MoreVertical size={16} */}
-                          </button>
-                        </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleVote(post.id, 'up')}
+                          className={`p-1 rounded transition-colors ${
+                            votedPosts.has(post.id) ? 'text-blue-400' : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          {/* ThumbsUp size={16} */}
+                        </button>
+                        <span className="text-sm text-gray-400">{post.likes}</span>
+                        <button
+                          onClick={() => handleVote(post.id, 'down')}
+                          className="p-1 text-gray-400 hover:text-white rounded transition-colors"
+                        >
+                          {/* ThumbsDown size={16} */}
+                        </button>
                       </div>
-                      
-                      <div className="text-gray-300 leading-relaxed whitespace-pre-wrap mb-4">
-                        {post.content}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-700">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleVote(post.id, 'up')}
-                              className={`p-1 rounded transition-colors ${
-                                votedPosts.has(post.id) ? 'text-blue-400' : 'text-gray-400 hover:text-white'
-                              }`}
-                            >
-                              {/* ThumbsUp size={16} */}
-                            </button>
-                            <span className="text-sm text-gray-400">{post.likes}</span>
-                            <button
-                              onClick={() => handleVote(post.id, 'down')}
-                              className="p-1 text-gray-400 hover:text-white rounded transition-colors"
-                            >
-                              {/* ThumbsDown size={16} */}
-                            </button>
-                          </div>
-                          <button className="text-gray-400 hover:text-white text-sm flex items-center gap-1">
-                            {/* Quote size={14} */}
-                            Quote
-                          </button>
-                          <button className="text-gray-400 hover:text-white text-sm flex items-center gap-1">
-                            {/* Flag size={14} */}
-                            Report
-                          </button>
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Post #{index + 2}
-                        </div>
-                      </div>
+                      <button className="text-gray-400 hover:text-white text-sm flex items-center gap-1">
+                        {/* Quote size={14} */}
+                        Quote
+                      </button>
+                      <button className="text-gray-400 hover:text-white text-sm flex items-center gap-1">
+                        {/* Flag size={14} */}
+                        Report
+                      </button>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Post #{index + 2}
                     </div>
                   </div>
                 </div>
-              {/* </motion.div> */}
-            ))}
-          {/* </AnimatePresence> */}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Reply Form */}
-        {/* {!thread.isLocked && ( */}
-          {/* <motion.div
-            className="bg-black border border-gray-700 rounded-lg p-6 mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          > */}
-            {!showReplyForm ? (
+        {!showReplyForm ? (
+          <button
+            onClick={() => setShowReplyForm(true)}
+            className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium px-6 py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            {/* MessageSquare size={16} */}
+            Add Reply
+          </button>
+        ) : (
+          <form onSubmit={handleSubmitReply} className="space-y-4">
+            <div>
+              <label className="block text-white font-medium mb-2">
+                Your Reply
+              </label>
+              <textarea
+                value={newReply}
+                onChange={(e) => setNewReply(e.target.value)}
+                placeholder="Write your reply here..."
+                rows={6}
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors resize-none"
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-3">
               <button
-                onClick={() => setShowReplyForm(true)}
-                className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium px-6 py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                type="button"
+                onClick={() => setShowReplyForm(false)}
+                className="bg-gray-800 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors"
               >
-                {/* MessageSquare size={16} */}
-                Add Reply
+                Cancel
               </button>
-            ) : (
-              <form onSubmit={handleSubmitReply} className="space-y-4">
-                <div>
-                  <label className="block text-white font-medium mb-2">
-                    Your Reply
-                  </label>
-                  <textarea
-                    value={newReply}
-                    onChange={(e) => setNewReply(e.target.value)}
-                    placeholder="Write your reply here..."
-                    rows={6}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors resize-none"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowReplyForm(false)}
-                    className="bg-gray-800 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !newReply.trim()}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        {/* <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> */}
-                        Posting...
-                      </>
-                    ) : (
-                      <>
-                        {/* <Send size={16} /> */}
-                        Post Reply
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            )}
-          {/* </motion.div> */}
-        {/* )} */}
+              <button
+                type="submit"
+                disabled={isSubmitting || !newReply.trim()}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    {/* <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> */}
+                    Posting...
+                  </>
+                ) : (
+                  <>
+                    {/* <Send size={16} /> */}
+                    Post Reply
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* {thread.isLocked && ( */}
           <div className="bg-red-900/20 border border-red-700 rounded-lg p-6 mt-8 text-center">
